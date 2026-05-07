@@ -1,0 +1,110 @@
+import React, { useState } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import {
+  Trophy, CalendarDays, Users, Dice5,
+  Menu, Power,
+  CheckCircle2, XCircle, AlertTriangle, Info, X
+} from 'lucide-react';
+import './Layout.css';
+
+const navItems = [
+  { path: '/tournaments', icon: Trophy,      label: 'Turnieje' },
+  { path: '/events',      icon: CalendarDays, label: 'Wydarzenia' },
+  { path: '/community',   icon: Users,        label: 'Społeczność' },
+];
+
+const TOAST_META = {
+  success: { icon: CheckCircle2, color: '#4CAF50' },
+  error:   { icon: XCircle,      color: 'var(--color14)' },
+  warning: { icon: AlertTriangle, color: 'var(--color6)' },
+  info:    { icon: Info,          color: 'var(--purple)' },
+};
+
+function ToastContainer() {
+  const { toasts, removeToast } = useApp();
+
+  return (
+    <div className="toast-container">
+      {toasts.map(t => {
+        const meta = TOAST_META[t.type] || TOAST_META.info;
+        const Icon = meta.icon;
+        return (
+          <div key={t.id} className={`toast toast-${t.type}`}>
+            <Icon size={16} color={meta.color} className="toast-icon" />
+            <span className="toast-message">{t.message}</span>
+            <button className="toast-close" onClick={() => removeToast(t.id)}>
+              <X size={14} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function Layout() {
+  const { user, logout } = useApp();
+  const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleLogout = () => { logout(); navigate('/login'); };
+
+  const initials = user?.displayName
+    ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    : '?';
+
+  const close = () => setSidebarOpen(false);
+
+  return (
+    <div className="app-root">
+      <button className="hamburger" onClick={() => setSidebarOpen(o => !o)}>
+        <Menu size={20} />
+      </button>
+
+      <div className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={close} />
+
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-icon">
+            <Dice5 size={22} color="white" />
+          </div>
+          <span className="sidebar-logo-text">
+            Board<span style={{ color: 'var(--color6)' }}>Games</span>
+          </span>
+        </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map(({ path, icon: Icon, label }) => (
+            <NavLink
+              key={path}
+              to={path}
+              onClick={close}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={18} className="nav-icon" />
+              <span className="nav-label">{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="sidebar-user">
+          <div className="user-avatar">{initials}</div>
+          <div className="user-info">
+            <p className="user-name">{user?.displayName}</p>
+            <p className="user-email">{user?.email}</p>
+          </div>
+          <button className="logout-btn" onClick={handleLogout} title="Wyloguj">
+            <Power size={16} />
+          </button>
+        </div>
+      </aside>
+
+      <main className="main-content">
+        <Outlet />
+      </main>
+
+      <ToastContainer />
+    </div>
+  );
+}

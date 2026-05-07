@@ -1,0 +1,185 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #07002A;
+  color: #E0E1F1;
+  min-height: 100vh;
+}
+
+:root {
+  --primary-bg1: #0A003A;
+  --primary-bg2: #1C0E49;
+  --secondary-bg1: #24105F;
+  --secondary-bg2: #210F55;
+  --panel-color: #200F53;
+  --panel-hover: #281269;
+  --panel-active: #2B1372;
+  --card-bg: #2A1B5E;
+  --card-inner: #1C0E49;
+  --border-color: #3A2878;
+
+  --color1: #E285DE;
+  --color2: #784DFD;
+  --color3: #4ADAEC;
+  --color4: #FB539B;
+  --color5: #7E82FC;
+  --color6: #FFC047;
+  --color7: #EF6C96;
+  --color8: #78A3FC;
+  --color9: #07F3C0;
+  --color14: #E14D3D;
+
+  --title1: #E0E1F1;
+  --title2: #D5CFF5;
+  --title3: #BCBEE0;
+  --text1: #9497CD;
+  --text2: #7C80C2;
+  --text3: #7376BD;
+
+  --purple: #6D2FFF;
+  --purple-hover: #7E3AF2;
+  --purple-light: #8B4FFF;
+  --red: #B71C1C;
+  --red-hover: #D32F2F;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+
+input, textarea, select {
+  background: var(--card-bg);
+  color: var(--title1);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--purple);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text2);
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+/* Utility classes */
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.card-inner {
+  background: var(--card-inner);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+
+.btn-primary {
+  background: var(--purple);
+  color: white;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--purple-hover); }
+.btn-primary:disabled { background: var(--border-color); color: #666; cursor: not-allowed; }
+
+.btn-danger {
+  background: var(--red);
+  color: white;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-danger:hover { background: var(--red-hover); }
+.btn-danger:disabled { background: var(--border-color); color: #666; cursor: not-allowed; }
+
+.btn-secondary {
+  background: var(--border-color);
+  color: white;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: #4A3888; }
+
+.section-title {
+  color: var(--title1);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.form-label {
+  color: var(--text1);
+  font-size: 12px;
+  margin-bottom: 4px;
+  margin-top: 8px;
+  display: block;
+}
+
+.status-msg {
+  color: var(--color3);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+}
+.empty-state svg { color: var(--border-color); margin-bottom: 15px; }
+.empty-state h3 { color: var(--text2); font-size: 16px; margin-bottom: 5px; font-weight: normal; }
+.empty-state p { color: var(--text1); font-size: 12px; }
+
+.page-header { margin-bottom: 15px; }
+.page-header h1 { font-size: 24px; font-weight: bold; }
+
+/* Styl dla inputów daty i czasu */
+input[type="date"],
+input[type="time"] {
+  color: white;       /* Kolor tekstu */
+}
+
+/* Wymuszenie białego koloru ikon dla przeglądarek opartych na Webkit (Chrome, Edge, Safari) */
+::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Zmienia czarną ikonę na białą */
+  cursor: pointer;
+}
+
+/* Jeśli chcesz, żeby ikona była zawsze widoczna (niektóre przeglądarki ją chowają) */
+.input-date-custom, .input-time-custom {
+  background-color: var(--card-bg); /* Dopasuj do swojego tła */
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  border-radius: 6px;
+}
