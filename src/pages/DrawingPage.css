@@ -1,0 +1,126 @@
+.drawing-page {
+  padding: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.drawing-header {
+  margin-bottom: 1.5rem;
+}
+
+.drawing-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.drawing-subtitle {
+  color: var(--text1);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.drawing-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.drawing-controls .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.drawing-controls .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text1);
+  font-weight: 500;
+}
+
+.drawing-controls .form-group input {
+  width: 100px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-inner);
+  color: var(--title1);
+  font-size: 1rem;
+}
+
+.btn-draw {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.4rem;
+  font-size: 1rem;
+}
+
+.drawing-total {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text1);
+  margin-bottom: 1rem;
+}
+
+.drawing-total strong {
+  color: var(--color6);
+}
+
+.session-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  transition: background 0.15s;
+}
+
+.session-card:hover { background: var(--panel-hover); }
+
+.session-number {
+  font-weight: 700;
+  color: var(--color3);
+  min-width: 28px;
+}
+
+.session-title {
+  flex: 1;
+  font-weight: 500;
+  color: var(--title1);
+}
+
+.session-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text2);
+}
+
+.drawing-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text2);
+  background: var(--card-inner);
+  border-radius: 10px;
+  border: 1px dashed var(--border-color);
+}

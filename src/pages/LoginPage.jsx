@@ -5,12 +5,12 @@ import { loginAsync, registerAsync } from '../data/db';
 import {
   Dice5, LayoutGrid, Shuffle, Trophy,
   CalendarDays, Users, LogIn, UserPlus,
-  Layers2
+  Layers2, Sun, Moon
 } from 'lucide-react';
 import './LoginPage.css';
 
 export default function LoginPage() {
-  const { login } = useApp();
+  const { login, theme, toggleTheme } = useApp();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState('login');
@@ -60,6 +60,11 @@ export default function LoginPage() {
       <div className="blob blob1" />
       <div className="blob blob2" />
       <div className="blob blob3" />
+
+      <button className="login-theme-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Włącz tryb jasny' : 'Włącz tryb ciemny'}>
+        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        <span>{theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}</span>
+      </button>
 
       <div className="login-layout">
         {/* LEFT: Branding */}

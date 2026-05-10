@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import LoginPage from './pages/LoginPage';
 import Layout from './components/Layout';
+import GamesPage from './pages/GamesPage';
+import DrawingPage from './pages/DrawingPage';
 import TournamentsPage from './pages/TournamentsPage';
 import EventsPage from './pages/EventsPage';
 import CommunityPage from './pages/CommunityPage';
@@ -19,7 +21,7 @@ function AppRoutes() {
   const { user } = useApp();
   return (
     <Routes>
-      <Route path="/login" element={user ? <Navigate to="/tournaments" replace /> : <LoginPage />} />
+      <Route path="/login" element={user ? <Navigate to="/games" replace /> : <LoginPage />} />
       <Route
         path="/"
         element={
@@ -28,7 +30,9 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/tournaments" replace />} />
+        <Route index element={<Navigate to="/games" replace />} />
+        <Route path="games" element={<GamesPage />} />
+        <Route path="drawing" element={<DrawingPage />} />
         <Route path="tournaments" element={<TournamentsPage />} />
         <Route path="events" element={<EventsPage />} />
         <Route path="community" element={<CommunityPage />} />

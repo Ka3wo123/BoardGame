@@ -255,3 +255,30 @@
     max-width: none;
   }
 }
+/* ¦¦ Theme toggle ¦¦ */
+.sidebar-theme {
+  padding: 8px 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.theme-toggle:hover {
+  background: var(--panel-hover);
+  color: var(--title1);
+  border-color: var(--purple);
+}
