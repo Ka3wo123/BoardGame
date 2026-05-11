@@ -1,10 +1,20 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(t => t === 'dark' ? 'light' : 'dark');
+  }, []);
 
   const login = (userData) => setUser(userData);
   const logout = () => setUser(null);
@@ -22,7 +32,7 @@ export function AppProvider({ children }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast }}>
+    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme }}>
       {children}
     </AppContext.Provider>
   );

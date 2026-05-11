@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Trophy, CalendarDays, Users, Dice5,
-  Menu, Power,
+  Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
+  Menu, Power, Sun, Moon,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
 import './Layout.css';
 
 const navItems = [
-  { path: '/tournaments', icon: Trophy,      label: 'Turnieje' },
-  { path: '/events',      icon: CalendarDays, label: 'Wydarzenia' },
-  { path: '/community',   icon: Users,        label: 'Społeczność' },
+  { path: '/games',        icon: Gamepad2,    label: 'Kolekcja gier' },
+  { path: '/drawing',      icon: Shuffle,     label: 'Losowanie' },
+  { path: '/tournaments',  icon: Trophy,      label: 'Turnieje' },
+  { path: '/events',       icon: CalendarDays, label: 'Wydarzenia' },
+  { path: '/community',    icon: Users,        label: 'Społeczność' },
 ];
 
 const TOAST_META = {
@@ -44,7 +46,7 @@ function ToastContainer() {
 }
 
 export default function Layout() {
-  const { user, logout } = useApp();
+  const { user, logout, theme, toggleTheme } = useApp();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -87,6 +89,13 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        <div className="sidebar-theme">
+          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? 'Włącz tryb jasny' : 'Włącz tryb ciemny'}>
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            <span>{theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}</span>
+          </button>
+        </div>
 
         <div className="sidebar-user">
           <div className="user-avatar">{initials}</div>

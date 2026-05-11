@@ -1,10 +1,11 @@
 .login-root {
   min-height: 100vh;
-  background: linear-gradient(135deg, #07002A 0%, #150B3E 50%, #0A003A 100%);
+  background: linear-gradient(135deg, var(--primary-bg1) 0%, var(--secondary-bg2) 50%, var(--primary-bg1) 100%);
   display: flex;
   align-items: stretch;
   position: relative;
   overflow: hidden;
+  transition: background 0.25s;
 }
 
 /* Decorative blobs */
@@ -69,7 +70,7 @@
 .logo-title {
   font-size: 26px;
   font-weight: 700;
-  color: white;
+  color: var(--title1);
   line-height: 1.2;
 }
 
@@ -134,10 +135,12 @@
 
 .login-card {
   width: 80%;
-  background: #2c1775;
+  background: var(--card-bg);
   border-radius: 20px;
   padding: 40px 36px;
-  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 40px rgba(0,0,0,0.18);
+  border: 1px solid var(--border-color);
+  transition: background 0.25s, border-color 0.25s;
 }
 
 .login-card-title {
@@ -173,8 +176,8 @@
 }
 
 .tab-btn.active {
-  color: var(--color6);
-  border-bottom-color: var(--color6);
+  color: var(--purple);
+  border-bottom-color: var(--purple);
 }
 
 .tab-btn:hover:not(.active) {
@@ -194,13 +197,15 @@
 }
 
 .msg-error {
-  background: #2D0A0A;
-  color: #FF6B6B;
+  background: rgba(220, 38, 38, 0.15);
+  color: var(--color14);
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .msg-success {
-  background: #0A2D0A;
-  color: #4CAF50;
+  background: rgba(5, 150, 105, 0.15);
+  color: var(--color9);
+  border: 1px solid rgba(5, 150, 105, 0.3);
 }
 
 .login-submit {
@@ -214,4 +219,32 @@
   .login-left { display: none; }
   .login-right { width: 100%; padding: 20px; }
   .login-card { max-width: 420px; margin: auto; }
+}
+
+/* ── Theme toggle on login page ── */
+.login-theme-btn {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text1);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.login-theme-btn:hover {
+  background: var(--panel-hover);
+  color: var(--title1);
+  border-color: var(--purple);
 }

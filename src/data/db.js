@@ -5,6 +5,11 @@ const store = {
   users: [
     { id: 'user-1', email: 'demo@example.com', passwordHash: 'demo123', displayName: 'Demo User', createdAt: new Date().toISOString() }
   ],
+  boardGames: [
+    { id: uuid(), title: 'Catan', description: 'Klasyczna gra strategiczna.', people: 4, hours: 2, accessibility: true, owner: 'Demo User' },
+    { id: uuid(), title: 'WsiÄ…Å›Ä‡ do PociÄ…gu', description: 'Buduj trasy kolejowe.', people: 5, hours: 1, accessibility: true, owner: 'Demo User' },
+    { id: uuid(), title: 'Dominion', description: 'Gra karciana z taliÄ….', people: 4, hours: 1, accessibility: true, owner: 'Demo User' },
+  ],
   tournaments: [],
   events: [],
   players: [],
@@ -245,3 +250,37 @@ export async function searchUsersAsync(query, currentUserId) {
 
 // helper
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ¦¦¦ Board Games ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+export async function getBoardGamesAsync(userId) {
+  await delay(100);
+  return store.boardGames.filter(g => g.owner === store.users.find(u => u.id === userId)?.displayName || g.owner === 'Demo User');
+}
+
+export async function addBoardGameAsync(userId, title, description, people, hours, accessibility) {
+  await delay(200);
+  const user = store.users.find(u => u.id === userId);
+  const game = { id: uuid(), title, description, people: Number(people), hours: Number(hours), accessibility, owner: user?.displayName || 'Unknown' };
+  store.boardGames.push(game);
+  return game;
+}
+
+export async function updateBoardGameAsync(id, title, description, people, hours, accessibility) {
+  await delay(200);
+  const g = store.boardGames.find(g => g.id === id);
+  if (g) { g.title = title; g.description = description; g.people = Number(people); g.hours = Number(hours); g.accessibility = accessibility; }
+  return g;
+}
+
+export async function deleteBoardGameAsync(id) {
+  await delay(100);
+  store.boardGames = store.boardGames.filter(g => g.id !== id);
+}
+
+// ¦¦¦ Drawing ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+export async function createDrawingAsync(numberOfPlayers) {
+  await delay(200);
+  const available = store.boardGames.filter(g => g.accessibility && g.people >= numberOfPlayers);
+  const shuffled = [...available].sort(() => Math.random() - 0.5);
+  return shuffled.map((g, i) => ({ number: i + 1, title: g.title, duration: g.hours }));
+}

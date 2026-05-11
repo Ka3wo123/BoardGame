@@ -6,11 +6,13 @@
 
 body {
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #07002A;
-  color: #E0E1F1;
+  background: var(--body-bg, #07002A);
+  color: var(--title1);
   min-height: 100vh;
+  transition: background 0.25s, color 0.25s;
 }
 
+/* ── Dark theme (default) ── */
 :root {
   --primary-bg1: #0A003A;
   --primary-bg2: #1C0E49;
@@ -22,6 +24,7 @@ body {
   --card-bg: #2A1B5E;
   --card-inner: #1C0E49;
   --border-color: #3A2878;
+  --body-bg: #07002A;
 
   --color1: #E285DE;
   --color2: #784DFD;
@@ -46,6 +49,45 @@ body {
   --purple-light: #8B4FFF;
   --red: #B71C1C;
   --red-hover: #D32F2F;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --primary-bg1: #EDE8FF;
+  --primary-bg2: #E4DCFF;
+  --secondary-bg1: #DDD5FF;
+  --secondary-bg2: #D8CFFF;
+  --panel-color: #EAE4FF;
+  --panel-hover: #DDD5FF;
+  --panel-active: #D0C5FF;
+  --card-bg: #FFFFFF;
+  --card-inner: #F5F2FF;
+  --border-color: #CABFFF;
+  --body-bg: #EDE8FF;
+
+  --color1: #C026D3;
+  --color2: #6D2FFF;
+  --color3: #0891B2;
+  --color4: #DB2777;
+  --color5: #4F46E5;
+  --color6: #B45309;
+  --color7: #BE185D;
+  --color8: #1D4ED8;
+  --color9: #059669;
+  --color14: #DC2626;
+
+  --title1: #1E1245;
+  --title2: #2D1B6E;
+  --title3: #3D2A8A;
+  --text1: #6B5FA8;
+  --text2: #8B7EC8;
+  --text3: #9E91D4;
+
+  --purple: #6D2FFF;
+  --purple-hover: #5A1FE8;
+  --purple-light: #7E3AF2;
+  --red: #DC2626;
+  --red-hover: #B91C1C;
 }
 
 /* Scrollbar */
