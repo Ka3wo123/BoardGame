@@ -3,19 +3,19 @@ import { Trophy, Shuffle, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import * as db from '../data/db';
 import './TwoColPage.css';
+import { useTranslation } from 'react-i18next';
 
 export default function TournamentsPage() {
   const { user, addToast } = useApp();
+  const { t } = useTranslation();
   const [tournaments, setTournaments] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  // Form
   const [name, setName] = useState('');
   const [gameTitle, setGameTitle] = useState('');
-  const [type, setType] = useState('Cup'); // 'Cup' | 'League'
+  const [type, setType] = useState('Cup');
   const [playersText, setPlayersText] = useState('');
 
-  // Match scoring
   const [selectedMatch, setSelectedMatch] = useState(null);
   const [score1, setScore1] = useState(0);
   const [score2, setScore2] = useState(0);
@@ -33,18 +33,18 @@ export default function TournamentsPage() {
 
   const create = async () => {
     const players = playersText.split(/[,\n\r]/).map(s => s.trim()).filter(Boolean);
-    if (players.length < 2) { addToast('Potrzeba minimum 2 graczy!', 'error'); return; }
-    const t = await db.createTournamentAsync(user.id, name, gameTitle, type, players, user.displayName);
-    addToast(`Turniej "${t.name}" utworzony z ${players.length} graczami.`, 'success');
+    if (players.length < 2) { addToast(t('tournaments.toasts.minPlayers'), 'error'); return; }
+    const tournament = await db.createTournamentAsync(user.id, name, gameTitle, type, players, user.displayName);
+    addToast(t('tournaments.toasts.created', { name: tournament.name, count: players.length }), 'success');
     setName(''); setGameTitle(''); setPlayersText('');
-    setTournaments(prev => [...prev, t]);
-    setSelected(t);
+    setTournaments(prev => [...prev, tournament]);
+    setSelected(tournament);
   };
 
   const generateBracket = async () => {
     if (!selected) return;
     await db.generateBracketAsync(selected.id);
-    addToast('Drabinka wygenerowana.', 'info');
+    addToast(t('tournaments.toasts.bracketGenerated'), 'info');
     load();
   };
 
@@ -53,13 +53,13 @@ export default function TournamentsPage() {
     await db.deleteTournamentAsync(selected.id, user.id);
     setTournaments(prev => prev.filter(t => t.id !== selected.id));
     setSelected(null);
-    addToast('Turniej usunięty.', 'success');
+    addToast(t('tournaments.toasts.deleted'), 'success');
   };
 
   const completeMatch = async (match) => {
     if (!selected || !match) return;
     await db.completeMatchAsync(selected.id, match.id, score1, score2);
-    addToast('Wynik meczu zapisany.', 'info');
+    addToast(t('tournaments.toasts.scoreSaved'), 'info');
     setSelectedMatch(null);
     load();
   };
@@ -71,7 +71,7 @@ export default function TournamentsPage() {
     <div className="tcpage">
       {/* Header */}
       <h1><Trophy size={24} style={{ verticalAlign: 'middle', marginRight: 8, color: 'var(--color6)' }} />
-        <span style={{ color: 'var(--color6)' }}>Turnieje</span>
+        <span style={{ color: 'var(--color6)' }}>{t('tournaments.title')}</span>
       </h1>
 
       <div className="tcpage-cols">
@@ -79,27 +79,27 @@ export default function TournamentsPage() {
         <div className="tcpage-left">
           {/* Create form */}
           <div className="card">
-            <p className="section-title">Nowy turniej</p>
+            <p className="section-title">{t('tournaments.newTournament')}</p>
 
-            <label className="form-label">Nazwa turnieju</label>
+            <label className="form-label">{t('tournaments.nameLabel')}</label>
             <input value={name} onChange={e => setName(e.target.value)} />
 
-            <label className="form-label">Gra</label>
+            <label className="form-label">{t('tournaments.gameLabel')}</label>
             <input value={gameTitle} onChange={e => setGameTitle(e.target.value)} />
 
-            <label className="form-label">Typ</label>
+            <label className="form-label">{t('tournaments.typeLabel')}</label>
             <div className="radio-row">
               <label className="radio-label">
                 <input type="radio" checked={type === 'Cup'} onChange={() => setType('Cup')} />
-                Puchar
+                {t('tournaments.typeCup')}
               </label>
               <label className="radio-label">
                 <input type="radio" checked={type === 'League'} onChange={() => setType('League')} />
-                Liga
+                {t('tournaments.typeLeague')}
               </label>
             </div>
 
-            <label className="form-label">Gracze (po przecinku)</label>
+            <label className="form-label">{t('tournaments.playersLabel')}</label>
             <textarea
               value={playersText}
               onChange={e => setPlayersText(e.target.value)}
@@ -112,28 +112,28 @@ export default function TournamentsPage() {
               onClick={create}
               disabled={!name}
             >
-              Utwórz turniej
+              {t('tournaments.btnCreate')}
             </button>
           </div>
 
           {/* Tournament list */}
-          <p className="section-title" style={{ marginTop: 10 }}>Lista turniejów</p>
+          <p className="section-title" style={{ marginTop: 10 }}>{t('tournaments.listTitle')}</p>
           {tournaments.length === 0 && (
-            <p style={{ color: 'var(--text2)', fontSize: 13 }}>Brak turniejów.</p>
+            <p style={{ color: 'var(--text2)', fontSize: 13 }}>{t('tournaments.noTournaments')}</p>
           )}
-          {tournaments.map(t => (
+          {tournaments.map(tItem => (
             <div
-              key={t.id}
-              className={`card-inner list-item ${selected?.id === t.id ? 'list-item-active' : ''}`}
-              onClick={() => setSelected(t)}
+              key={tItem.id}
+              className={`card-inner list-item ${selected?.id === tItem.id ? 'list-item-active' : ''}`}
+              onClick={() => setSelected(tItem)}
               style={{ cursor: 'pointer' }}
             >
-              <p style={{ color: 'var(--color6)', fontWeight: 600, fontSize: 14 }}>{t.name}</p>
+              <p style={{ color: 'var(--color6)', fontWeight: 600, fontSize: 14 }}>{tItem.name}</p>
               <p style={{ color: 'var(--text1)', fontSize: 11 }}>
-                {t.gameTitle} • {t.type} • {t.status}
+                {tItem.gameTitle} • {tItem.type === 'Cup' ? t('tournaments.typeCup') : t('tournaments.typeLeague')} • {tItem.status}
               </p>
               <p style={{ color: 'var(--text2)', fontSize: 11 }}>
-                Graczy: {t.players?.length || 0}
+                {t('tournaments.playersCount', { count: tItem.players?.length || 0 })}
               </p>
             </div>
           ))}
@@ -146,18 +146,18 @@ export default function TournamentsPage() {
               {/* Actions */}
               <div className="action-row">
                 <button className="btn-primary" onClick={generateBracket}>
-                  <Shuffle size={14} style={{ marginRight: 6 }} />Generuj drabinkę
+                  <Shuffle size={14} style={{ marginRight: 6 }} />{t('tournaments.actions.generateBracket')}
                 </button>
                 <button className="btn-danger" onClick={deleteTournament}>
-                  <Trash2 size={14} style={{ marginRight: 6 }} />Usuń turniej
+                  <Trash2 size={14} style={{ marginRight: 6 }} />{t('tournaments.actions.deleteTournament')}
                 </button>
               </div>
 
               {/* Matches */}
               <div className="card">
-                <p className="section-title">Mecze</p>
+                <p className="section-title">{t('tournaments.matches.title')}</p>
                 {sortedMatches.length === 0 && (
-                  <p style={{ color: 'var(--text2)', fontSize: 13 }}>Brak meczów. Kliknij "Generuj drabinkę".</p>
+                  <p style={{ color: 'var(--text2)', fontSize: 13 }}>{t('tournaments.matches.noMatches')}</p>
                 )}
                 {sortedMatches.map(m => (
                   <div key={m.id} className="card-inner match-row">
@@ -177,7 +177,7 @@ export default function TournamentsPage() {
                         style={{ fontSize: 11, padding: '4px 8px', marginLeft: 10 }}
                         onClick={() => { setSelectedMatch(m); setScore1(0); setScore2(0); }}
                       >
-                        Wynik
+                        {t('tournaments.matches.btnResult')}
                       </button>
                     )}
                   </div>
@@ -187,7 +187,7 @@ export default function TournamentsPage() {
                 {selectedMatch && (
                   <div className="score-form card-inner" style={{ marginTop: 10 }}>
                     <p style={{ color: 'var(--text1)', fontSize: 12, marginBottom: 8 }}>
-                      Wynik: <strong style={{ color: 'white' }}>{selectedMatch.player1}</strong> vs <strong style={{ color: 'white' }}>{selectedMatch.player2}</strong>
+                      {t('tournaments.matches.scoreTitle')} <strong style={{ color: 'white' }}>{selectedMatch.player1}</strong> vs <strong style={{ color: 'white' }}>{selectedMatch.player2}</strong>
                     </p>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                       <input
@@ -201,8 +201,8 @@ export default function TournamentsPage() {
                         onChange={e => setScore2(Number(e.target.value))}
                         style={{ width: 60 }}
                       />
-                      <button className="btn-primary" style={{ padding: '6px 12px' }} onClick={() => completeMatch(selectedMatch)}>Zapisz</button>
-                      <button className="btn-secondary" style={{ padding: '6px 12px' }} onClick={() => setSelectedMatch(null)}>Anuluj</button>
+                      <button className="btn-primary" style={{ padding: '6px 12px' }} onClick={() => completeMatch(selectedMatch)}>{t('tournaments.matches.btnSave')}</button>
+                      <button className="btn-secondary" style={{ padding: '6px 12px' }} onClick={() => setSelectedMatch(null)}>{t('tournaments.matches.btnCancel')}</button>
                     </div>
                   </div>
                 )}
@@ -211,11 +211,17 @@ export default function TournamentsPage() {
               {/* League standings */}
               {selected.type === 'League' && sortedStandings.length > 0 && (
                 <div className="card">
-                  <p className="section-title">Tabela ligowa</p>
+                  <p className="section-title">{t('tournaments.table.title')}</p>
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>Gracz</th><th>M</th><th>W</th><th>R</th><th>P</th><th>Pkt</th><th>+/-</th>
+                        <th>{t('tournaments.table.thPlayer')}</th>
+                        <th>{t('tournaments.table.thPlayed')}</th>
+                        <th>{t('tournaments.table.thWins')}</th>
+                        <th>{t('tournaments.table.thDraws')}</th>
+                        <th>{t('tournaments.table.thLosses')}</th>
+                        <th>{t('tournaments.table.thPoints')}</th>
+                        <th>+/-</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -238,8 +244,8 @@ export default function TournamentsPage() {
           ) : (
             <div className="card empty-state">
               <Trophy size={48} style={{ verticalAlign: 'middle', marginRight: 8, color: 'var(--color6)' }} />
-              <h3>Wybierz turniej z listy</h3>
-              <p>lub utwórz nowy, aby zobaczyć szczegóły</p>
+              <h3>{t('tournaments.emptyStateTitle')}</h3>
+              <p>{t('tournaments.emptyStateDesc')}</p>
             </div>
           )}
         </div>

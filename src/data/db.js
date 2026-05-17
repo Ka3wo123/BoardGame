@@ -251,7 +251,7 @@ export async function searchUsersAsync(query, currentUserId) {
 // helper
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ¦¦¦ Board Games ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+// ï¿½ï¿½ï¿½ Board Games ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 export async function getBoardGamesAsync(userId) {
   await delay(100);
   return store.boardGames.filter(g => g.owner === store.users.find(u => u.id === userId)?.displayName || g.owner === 'Demo User');
@@ -277,7 +277,7 @@ export async function deleteBoardGameAsync(id) {
   store.boardGames = store.boardGames.filter(g => g.id !== id);
 }
 
-// ¦¦¦ Drawing ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+// ï¿½ï¿½ï¿½ Drawing ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 export async function createDrawingAsync(numberOfPlayers) {
   await delay(200);
   const available = store.boardGames.filter(g => g.accessibility && g.people >= numberOfPlayers);

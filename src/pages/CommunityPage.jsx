@@ -3,21 +3,21 @@ import { Users, Target, Trash2, ArrowLeftRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import * as db from '../data/db';
 import './TwoColPage.css';
+import { useTranslation } from 'react-i18next';
 
 export default function CommunityPage() {
   const { user, addToast } = useApp();
+  const { t } = useTranslation();
   const [players, setPlayers] = useState([]);
   const [selected, setSelected] = useState(null);
   const [allExchanges, setAllExchanges] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
 
-  // Add player form
   const [nickname, setNickname] = useState('');
   const [fullName, setFullName] = useState('');
   const [ownedGames, setOwnedGames] = useState('');
   const [favoriteGames, setFavoriteGames] = useState('');
 
-  // Exchange form
   const [gameOffered, setGameOffered] = useState('');
   const [gameWanted, setGameWanted] = useState('');
 
@@ -36,7 +36,7 @@ export default function CommunityPage() {
 
   const addPlayer = async () => {
     const p = await db.addPlayerAsync(user.id, nickname, fullName, ownedGames, favoriteGames);
-    addToast(`Gracz "${p.nickname}" dodany.`, 'success');
+    addToast(t('community.toasts.playerAdded', { nickname: p.nickname }), 'success');
     setNickname(''); setFullName(''); setOwnedGames(''); setFavoriteGames('');
     setPlayers(prev => [...prev, p]);
     setSelected(p);
@@ -47,14 +47,14 @@ export default function CommunityPage() {
     await db.deletePlayerAsync(selected.id, user.id);
     setPlayers(prev => prev.filter(p => p.id !== selected.id));
     setSelected(null);
-    addToast('Gracz usunięty.', 'info');
+    addToast(t('community.toasts.playerDeleted'), 'info');
   };
 
   const createExchange = async () => {
     if (!selected) return;
     await db.createExchangeAsync(user.id, selected.id, gameOffered, gameWanted);
     setGameOffered(''); setGameWanted('');
-    addToast('Oferta wymiany dodana.', 'success');
+    addToast(t('community.toasts.offerAdded'), 'success');
     load();
   };
 
@@ -62,8 +62,8 @@ export default function CommunityPage() {
     if (!selected) return;
     const favs = selected.favoriteGames || [];
     const recs = favs.length > 0
-      ? favs.map(g => `Na podstawie "${g}" polecamy: ${g} II, ${g} – Rozszerzenie, Inne gry w stylu ${g}.`)
-      : ['Dodaj ulubione gry gracza, aby wygenerować rekomendacje.'];
+      ? favs.map(g => t('community.recommendations.basedOn', { game: g }))
+      : [t('community.recommendations.empty')];
     setRecommendations(recs);
   };
 
@@ -72,8 +72,9 @@ export default function CommunityPage() {
   return (
     <div className="tcpage">
       <div className="page-header">
-        <h1><Users size={24} style={{ verticalAlign: 'middle', marginRight: 8, color: '#9B59B6' }} />
-          <span style={{ color: '#9B59B6' }}>Społeczność</span>
+        <h1>
+          <Users size={24} style={{ verticalAlign: 'middle', marginRight: 8, color: '#9B59B6' }} />
+          <span style={{ color: '#9B59B6' }}>{t('community.title')}</span>
         </h1>
       </div>
 
@@ -81,18 +82,18 @@ export default function CommunityPage() {
         {/* LEFT */}
         <div className="tcpage-left" style={{ width: 280 }}>
           <div className="card">
-            <p className="section-title">Nowy gracz</p>
+            <p className="section-title">{t('community.newPlayer')}</p>
 
-            <label className="form-label">Nick</label>
+            <label className="form-label">{t('community.nickname')}</label>
             <input value={nickname} onChange={e => setNickname(e.target.value)} />
 
-            <label className="form-label">Imię i nazwisko</label>
+            <label className="form-label">{t('community.fullName')}</label>
             <input value={fullName} onChange={e => setFullName(e.target.value)} />
 
-            <label className="form-label">Posiadane gry (po przecinku)</label>
+            <label className="form-label">{t('community.ownedGamesLabel')}</label>
             <textarea value={ownedGames} onChange={e => setOwnedGames(e.target.value)} rows={2}/>
 
-            <label className="form-label">Ulubione gry (po przecinku)</label>
+            <label className="form-label">{t('community.favoriteGamesLabel')}</label>
             <textarea value={favoriteGames} onChange={e => setFavoriteGames(e.target.value)} rows={2} />
 
             <button
@@ -101,12 +102,12 @@ export default function CommunityPage() {
               onClick={addPlayer}
               disabled={!nickname}
             >
-              Dodaj gracza
+              {t('community.btnAddPlayer')}
             </button>
           </div>
 
-          <p className="section-title">Gracze</p>
-          {players.length === 0 && <p style={{ color: 'var(--text2)', fontSize: 13 }}>Brak graczy.</p>}
+          <p className="section-title">{t('community.playersTitle')}</p>
+          {players.length === 0 && <p style={{ color: 'var(--text2)', fontSize: 13 }}>{t('community.noPlayers')}</p>}
           {players.map(p => (
             <div
               key={p.id}
@@ -118,7 +119,8 @@ export default function CommunityPage() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontWeight: 600, fontSize: 13, color: 'var(--title1)' }}>{p.nickname}</p>
                 <p style={{ color: 'var(--text1)', fontSize: 11 }}>{p.fullName}</p>
-                <p style={{ color: 'var(--text2)', fontSize: 10 }}>Gier: {p.ownedGames?.length || 0}</p>
+                {/* i18next automatycznie podmieni {{count}} */}
+                <p style={{ color: 'var(--text2)', fontSize: 10 }}>{t('community.gamesCount', { count: p.ownedGames?.length || 0 })}</p>
               </div>
             </div>
           ))}
@@ -131,35 +133,35 @@ export default function CommunityPage() {
               {/* Actions */}
               <div className="action-row">
                 <button className="btn-primary" onClick={generateRecommendations}>
-                  <Target size={14} style={{ marginRight: 6 }} />Rekomendacje
+                  <Target size={14} style={{ marginRight: 6 }} />{t('community.actions.recommendations')}
                 </button>
                 <button className="btn-danger" onClick={deletePlayer}>
-                  <Trash2 size={14} style={{ marginRight: 6 }} />Usuń gracza
+                  <Trash2 size={14} style={{ marginRight: 6 }} />{t('community.actions.deletePlayer')}
                 </button>
               </div>
 
               {/* Stats */}
               <div className="card">
-                <p className="section-title">Statystyki</p>
+                <p className="section-title">{t('community.stats.title')}</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                  <StatBox value={selected.stats?.gamesPlayed || 0} label="Rozegranych" color="var(--color6)" />
-                  <StatBox value={selected.stats?.tournamentsWon || 0} label="Wygranych" color="var(--color3)" />
-                  <StatBox value={selected.stats?.eventsAttended || 0} label="Wydarzeń" color="var(--color4)" />
+                  <StatBox value={selected.stats?.gamesPlayed || 0} label={t('community.stats.played')} color="var(--color6)" />
+                  <StatBox value={selected.stats?.tournamentsWon || 0} label={t('community.stats.won')} color="var(--color3)" />
+                  <StatBox value={selected.stats?.eventsAttended || 0} label={t('community.stats.attended')} color="var(--color4)" />
                 </div>
               </div>
 
               {/* Games */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
                 <div className="card" style={{ margin: 0 }}>
-                  <p className="section-title">Posiadane gry</p>
-                  {(selected.ownedGames || []).length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>Brak.</p>}
+                  <p className="section-title">{t('community.games.owned')}</p>
+                  {(selected.ownedGames || []).length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>{t('community.games.none')}</p>}
                   {(selected.ownedGames || []).map((g, i) => (
                     <p key={i} style={{ fontSize: 12, color: 'var(--title1)', marginBottom: 2 }}>{g}</p>
                   ))}
                 </div>
                 <div className="card" style={{ margin: 0 }}>
-                  <p className="section-title">Ulubione gry</p>
-                  {(selected.favoriteGames || []).length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>Brak.</p>}
+                  <p className="section-title">{t('community.games.favorite')}</p>
+                  {(selected.favoriteGames || []).length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>{t('community.games.none')}</p>}
                   {(selected.favoriteGames || []).map((g, i) => (
                     <p key={i} style={{ fontSize: 12, color: 'var(--color6)', marginBottom: 2 }}>⭐ {g}</p>
                   ))}
@@ -168,15 +170,15 @@ export default function CommunityPage() {
 
               {/* Exchange */}
               <div className="card">
-                <p className="section-title">Wymiana gier</p>
+                <p className="section-title">{t('community.exchange.title')}</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 10, alignItems: 'flex-end' }}>
                   <div>
-                    <label className="form-label">Oferuję</label>
-                    <input value={gameOffered} onChange={e => setGameOffered(e.target.value)} placeholder="Gra do oddania" />
+                    <label className="form-label">{t('community.exchange.offered')}</label>
+                    <input value={gameOffered} onChange={e => setGameOffered(e.target.value)} placeholder={t('community.exchange.offeredPlaceholder')} />
                   </div>
                   <div>
-                    <label className="form-label">Szukam</label>
-                    <input value={gameWanted} onChange={e => setGameWanted(e.target.value)} placeholder="Gra poszukiwana" />
+                    <label className="form-label">{t('community.exchange.wanted')}</label>
+                    <input value={gameWanted} onChange={e => setGameWanted(e.target.value)} placeholder={t('community.exchange.wantedPlaceholder')} />
                   </div>
                   <button
                     className="btn-primary"
@@ -184,12 +186,12 @@ export default function CommunityPage() {
                     onClick={createExchange}
                     disabled={!gameOffered || !gameWanted}
                   >
-                    + Dodaj
+                    {t('community.exchange.btnAdd')}
                   </button>
                 </div>
 
-                <p style={{ color: 'var(--text1)', fontSize: 12, margin: '10px 0 5px' }}>Aktywne oferty</p>
-                {playerExchanges.length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>Brak ofert.</p>}
+                <p style={{ color: 'var(--text1)', fontSize: 12, margin: '10px 0 5px' }}>{t('community.exchange.activeOffers')}</p>
+                {playerExchanges.length === 0 && <p style={{ color: 'var(--text2)', fontSize: 12 }}>{t('community.exchange.noOffers')}</p>}
                 {playerExchanges.map(ex => (
                   <div key={ex.id} className="card-inner" style={{ marginBottom: 4, fontSize: 12 }}>
                     <span style={{ color: 'var(--color4)' }}>{ex.gameOffered}</span>
@@ -202,7 +204,7 @@ export default function CommunityPage() {
               {/* Recommendations */}
               {recommendations.length > 0 && (
                 <div className="card">
-                  <p className="section-title">Rekomendacje</p>
+                  <p className="section-title">{t('community.recommendations.title')}</p>
                   {recommendations.map((r, i) => (
                     <div key={i} className="card-inner" style={{ marginBottom: 4, fontSize: 12 }}>
                       {r}
@@ -214,8 +216,8 @@ export default function CommunityPage() {
           ) : (
             <div className="card empty-state">
               <Users size={48} style={{ verticalAlign: 'middle', marginRight: 8, color: '#9B59B6' }} />
-              <h3>Wybierz gracza z listy</h3>
-              <p>lub dodaj nowego, aby zobaczyć profil</p>
+              <h3>{t('community.emptyStateTitle')}</h3>
+              <p>{t('community.emptyStateDesc')}</p>
             </div>
           )}
         </div>
