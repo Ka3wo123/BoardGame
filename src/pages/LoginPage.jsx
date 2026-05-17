@@ -3,15 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { loginAsync, registerAsync } from '../data/db';
 import {
-  Dice5, LayoutGrid, Shuffle, Trophy,
+  Dice5, Shuffle, Trophy,
   CalendarDays, Users, LogIn, UserPlus,
   Layers2, Sun, Moon
 } from 'lucide-react';
 import './LoginPage.css';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from '../components/LanguageToggle';
+import i18n from '../i18n';
 
 export default function LoginPage() {
   const { login, theme, toggleTheme } = useApp();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
@@ -26,32 +30,32 @@ export default function LoginPage() {
   const switchMode = (m) => { setMode(m); clearMessages(); };
 
   const handleLogin = async () => {
-    if (!password) { setError('Podaj hasło!'); return; }
+    if (!password) { setError(t('login.errors.requiredPassword')); return; }
     setLoading(true); clearMessages();
     try {
       const user = await loginAsync(email, password);
-      if (!user) { setError('Nieprawidłowy email lub hasło.'); return; }
+      if (!user) { setError(t('login.errors.invalidCredentials')); return; }
       login(user);
       navigate('/tournaments');
     } catch (ex) {
-      setError(`Błąd połączenia: ${ex.message}`);
+      setError(t('login.errors.connectionError', { message: ex.message }));
     } finally { setLoading(false); }
   };
 
   const handleRegister = async () => {
-    if (!password) { setError('Podaj hasło!'); return; }
-    if (password.length < 6) { setError('Hasło musi mieć minimum 6 znaków.'); return; }
-    if (password !== confirmPassword) { setError('Hasła nie są identyczne!'); return; }
+    if (!password) { setError(t('login.errors.requiredPassword')); return; }
+    if (password.length < 6) { setError(t('login.errors.passwordLength')); return; }
+    if (password !== confirmPassword) { setError(t('login.errors.passwordsNotMatch')); return; }
     setLoading(true); clearMessages();
     try {
       const { user, error: err } = await registerAsync(email, password, displayName);
       if (err) { setError(err); return; }
-      setSuccess(`Konto "${user.displayName}" utworzone! Możesz się teraz zalogować.`);
+      setSuccess(t('login.messages.accountCreated', { name: user.displayName }));
       switchMode('login');
       setEmail(user.email);
       setDisplayName(''); setPassword(''); setConfirmPassword('');
     } catch (ex) {
-      setError(`Błąd: ${ex.message}`);
+      setError(t('login.errors.genericError', { message: ex.message }));
     } finally { setLoading(false); }
   };
 
@@ -61,10 +65,18 @@ export default function LoginPage() {
       <div className="blob blob2" />
       <div className="blob blob3" />
 
-      <button className="login-theme-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Włącz tryb jasny' : 'Włącz tryb ciemny'}>
-        {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        <span>{theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}</span>
-      </button>
+      <div className='top-right-actions'>
+        <LanguageToggle />
+        <button
+          className="top-bar-btn"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? t('login.themeLight') : t('login.themeDark')}
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          <span>{theme === 'dark' ? t('login.themeLight') : t('login.themeDark')}</span>
+        </button>
+      </div>
+
 
       <div className="login-layout">
         {/* LEFT: Branding */}
@@ -78,18 +90,18 @@ export default function LoginPage() {
                 <h2 className="logo-title">
                   Board<span style={{ color: 'var(--color6)' }}>Games</span>
                 </h2>
-                <p className="logo-subtitle">Twoja platforma gier planszowych</p>
+                <p className="logo-subtitle">{t('login.logoSubtitle')}</p>
               </div>
             </div>
 
             <div className="logo-sep" />
 
             <div className="feature-list">
-              <FeatureItem Icon={Layers2}   color="var(--color3)" title="Katalog Gier"      desc="Baza z tagami, ocenami i filtrowaniem" />
-              <FeatureItem Icon={Shuffle}      color="var(--color4)" title="Losowanie Tytułu"  desc="Inteligentny dobór gry wg liczby graczy" />
-              <FeatureItem Icon={Trophy}       color="var(--color6)" title="Turnieje"           desc="Drabinki pucharowe i ligi" />
-              <FeatureItem Icon={CalendarDays} color="var(--color8)" title="Wydarzenia"         desc="Spotkania i listy obecności" />
-              <FeatureItem Icon={Users}        color="#9B59B6"       title="Społeczność"        desc="Profile graczy i wymiana gier" />
+              <FeatureItem Icon={Layers2} color="var(--color3)" title={t('login.features.catalogTitle')} desc={t('login.features.catalogDesc')} />
+              <FeatureItem Icon={Shuffle} color="var(--color4)" title={t('login.features.drawTitle')} desc={t('login.features.drawDesc')} />
+              <FeatureItem Icon={Trophy} color="var(--color6)" title={t('login.features.tournamentsTitle')} desc={t('login.features.tournamentsDesc')} />
+              <FeatureItem Icon={CalendarDays} color="var(--color8)" title={t('login.features.eventsTitle')} desc={t('login.features.eventsDesc')} />
+              <FeatureItem Icon={Users} color="#9B59B6" title={t('login.features.communityTitle')} desc={t('login.features.communityDesc')} />
             </div>
           </div>
         </div>
@@ -98,43 +110,43 @@ export default function LoginPage() {
         <div className="login-right">
           <div className="login-card">
             <h2 className="login-card-title">
-              Witaj w <span style={{ color: 'var(--color6)' }}>BoardGames</span>
+              {t('login.card.welcome')}<span style={{ color: 'var(--color6)' }}>BoardGames</span>
             </h2>
             <p className="login-card-subtitle">
-              {mode === 'login' ? 'Zaloguj się, aby kontynuować' : 'Utwórz nowe konto'}
+              {mode === 'login' ? t('login.card.subtitleLogin') : t('login.card.subtitleRegister')}
             </p>
 
             <div className="login-tabs">
               <button
                 className={`tab-btn ${mode === 'login' ? 'active' : ''}`}
                 onClick={() => switchMode('login')}
-              >Logowanie</button>
+              >{t('login.card.tabLogin')}</button>
               <button
                 className={`tab-btn ${mode === 'register' ? 'active' : ''}`}
                 onClick={() => switchMode('register')}
-              >Rejestracja</button>
+              >{t('login.card.tabRegister')}</button>
             </div>
 
             {mode === 'register' && (
               <div className="field-group">
-                <label className="form-label">Wyświetlana nazwa</label>
-                <input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Twój nick" />
+                <label className="form-label">{t('login.card.labelDisplayName')}</label>
+                <input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder={t('login.card.placeholderDisplayName')} />
               </div>
             )}
 
             <div className="field-group">
-              <label className="form-label">Adres e-mail</label>
+              <label className="form-label">{t('login.card.labelEmail')}</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" />
             </div>
 
             <div className="field-group">
-              <label className="form-label">Hasło</label>
+              <label className="form-label">{t('login.card.labelPassword')}</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
             </div>
 
             {mode === 'register' && (
               <div className="field-group">
-                <label className="form-label">Potwierdź hasło</label>
+                <label className="form-label">{t('login.card.labelConfirmPassword')}</label>
                 <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" />
               </div>
             )}
@@ -149,8 +161,8 @@ export default function LoginPage() {
                 disabled={loading || !email}
               >
                 {loading
-                  ? 'Logowanie...'
-                  : <><LogIn size={15} style={{ marginRight: 8, verticalAlign: 'middle' }} />Zaloguj się</>
+                  ? t('login.card.loadingLogin')
+                  : <><LogIn size={15} style={{ marginRight: 8, verticalAlign: 'middle' }} />{t('login.card.btnLogin')}</>
                 }
               </button>
             ) : (
@@ -160,8 +172,8 @@ export default function LoginPage() {
                 disabled={loading || !email || !displayName}
               >
                 {loading
-                  ? 'Tworzenie...'
-                  : <><UserPlus size={15} style={{ marginRight: 8, verticalAlign: 'middle' }} />Utwórz konto</>
+                  ? t('login.card.loadingRegister')
+                  : <><UserPlus size={15} style={{ marginRight: 8, verticalAlign: 'middle' }} />{t('login.card.btnRegister')}</>
                 }
               </button>
             )}
