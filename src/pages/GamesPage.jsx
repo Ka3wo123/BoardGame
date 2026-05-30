@@ -1,36 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Check, Archive } from 'lucide-react';
+import { Plus, Trash2, Pencil, Check, X, Users, Timer, Dot } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import * as db from '../data/db';
 import './TwoColPage.css';
 import './GamesPage.css';
+import { useTranslation } from 'react-i18next';
 
-const COMPLEXITY_OPTIONS = ['Łatwa', 'Średnia', 'Trudna', 'Ekspercka'];
-const STATUS_OPTIONS = ['Available', 'In Use', 'Maintenance'];
-const STATUS_LABEL = { Available: 'Dostępna', 'In Use': 'W użyciu', Maintenance: 'Serwis' };
-const EMPTY_FORM = { title: '', description: '', minPlayers: 2, maxPlayers: 4, durationMin: 60, complexity: 'Średnia', status: 'Available', coverColor: '#6C3483' };
-const STATUS_META = {
-  Available:   { label: 'DOSTĘPNA',  cls: 'badge-available' },
-  'In Use':    { label: 'W UŻYCIU',  cls: 'badge-inuse' },
-  Maintenance: { label: 'SERWIS',    cls: 'badge-maintenance' },
-};
-const COVER_PRESETS = ['#6C3483','#1A5276','#7D6608','#1B4F72','#145A32','#7B241C','#4A235A','#1F618D'];
+const EMPTY_FORM = { title: '', description: '', people: 2, hours: 1, accessibility: true };
 
 export default function GamesPage() {
-  const { user, addToast, language } = useApp();
-  const tr = (pl, en) => language === 'en' ? en : pl;
-  const COMPLEXITY_EN = { 'Łatwa': 'Easy', 'Średniat': 'Medium', 'Trudna': 'Hard', 'Ekspercka': 'Expert' };
-  const STATUS_META_TR = {
-    Available:   { label: tr('DOSTĘPNA', 'AVAILABLE'), cls: 'badge-available' },
-    'In Use':    { label: tr('W UŻYCIU', 'IN USE'),   cls: 'badge-inuse' },
-    Maintenance: { label: tr('SERWIS', 'SERVICE'),  cls: 'badge-maintenance' },
-  };
+  const { user, addToast } = useApp();
+  const { t } = useTranslation();
   const [games, setGames] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editId, setEditId] = useState(null);
-  const [filterPlayers, setFilterPlayers] = useState('');
-  const [filterAvail, setFilterAvail] = useState('Wszystkie');
+  const [filterPeople, setFilterPeople] = useState('');
 
   const load = useCallback(async () => {
     const list = await db.getBoardGamesAsync(user.id);
@@ -42,185 +27,118 @@ export default function GamesPage() {
   const resetForm = () => { setForm(EMPTY_FORM); setEditId(null); setShowForm(false); };
 
   const handleSubmit = async () => {
-    if (!form.title.trim()) { addToast(tr('Tytuł jest wymagany.', 'Title is required.'), 'error'); return; }
+    if (!form.title.trim()) { addToast(t('games.toasts.requiredTitle'), 'error'); return; }
     if (editId) {
-      await db.updateBoardGameAsync(editId, form.title, form.description, form.minPlayers, form.maxPlayers, form.durationMin, form.complexity, form.status, form.coverColor);
-      addToast(tr('Zaktualizowano "', 'Updated "') + form.title + '"', 'success');
+      await db.updateBoardGameAsync(editId, form.title, form.description, form.people, form.hours, form.accessibility);
+      addToast(t('games.toasts.updated', { title: form.title }), 'success');
     } else {
-      await db.addBoardGameAsync(user.id, form.title, form.description, form.minPlayers, form.maxPlayers, form.durationMin, form.complexity, form.status, form.coverColor);
-      addToast(tr('Dodano "', 'Added "') + form.title + '"', 'success');
+      await db.addBoardGameAsync(user.id, form.title, form.description, form.people, form.hours, form.accessibility);
+      addToast(t('games.toasts.added', { title: form.title }), 'success');
     }
-    resetForm(); load();
-  };
-
-  const startEdit = g => {
-    setForm({ title: g.title, description: g.description, minPlayers: g.minPlayers, maxPlayers: g.maxPlayers, durationMin: g.durationMin, complexity: g.complexity, status: g.status, coverColor: g.coverColor || '#6C3483' });
-    setEditId(g.id); setShowForm(true);
-  };
-
-  const handleDelete = async g => {
-    await db.deleteBoardGameAsync(g.id);
-    addToast(tr('Zarchiwizowano "', 'Removed "') + g.title + '"', 'info');
-    if (editId === g.id) resetForm();
+    resetForm();
     load();
   };
 
-  const filtered = games.filter(g => {
-    const playerOk = filterPlayers ? g.maxPlayers >= Number(filterPlayers) : true;
-    const availOk = filterAvail === 'All' || filterAvail === 'Wszystkie' ? true : g.status === filterAvail;
-    return playerOk && availOk;
-  });
+  const startEdit = (g) => {
+    setForm({ title: g.title, description: g.description, people: g.people, hours: g.hours, accessibility: g.accessibility });
+    setEditId(g.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (g) => {
+    await db.deleteBoardGameAsync(g.id);
+    addToast(t('games.toasts.deleted', { title: g.title }), 'info');
+    load();
+  };
+
+  const filtered = filterPeople
+    ? games.filter(g => g.people >= Number(filterPeople))
+    : games;
 
   return (
     <div className="two-col-page">
+      {/* Left — list */}
       <div className="two-col-left">
         <div className="two-col-header">
-          <div>
-            <h2>{tr('Biblioteka gier', 'Game library')}</h2>
-            <span className="total-badge">{games.length} {tr('ŁĄCZNIE', 'TOTAL')}</span>
-          </div>
+          <h2>{t('games.title')}</h2>
           <button className="btn-primary" onClick={() => { resetForm(); setShowForm(true); }}>
-            <Plus size={16} /> {tr('Dodaj grę', 'Add game')}
+            <div className='add-game'><Plus size={16} /> {t('games.btnAdd')}</div>
           </button>
         </div>
 
-        <div className="games-filters">
-          <div className="filter-group">
-            <span className="filter-label">{tr('LICZBA GRACZY', 'PLAYERS')}</span>
-            <select value={filterPlayers} onChange={e => setFilterPlayers(e.target.value)} className="filter-select">
-              <option value="">{tr('Dowolna', 'Any')}</option>
-              {[2,3,4,5,6,8].map(n => <option key={n} value={n}>{n}+ {tr('graczy', 'players')}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <span className="filter-label">{tr('DOSTĘPNOŚĆ', 'AVAILABILITY')}</span>
-            <select value={filterAvail} onChange={e => setFilterAvail(e.target.value)} className="filter-select">
-              <option value="Wszystkie">{tr('Wszystkie', 'All')}</option>
-              <option value="Available">{tr('Dostępna', 'Available')}</option>
-              <option value="In Use">{tr('W użyciu', 'In Use')}</option>
-              <option value="Maintenance">{tr('Serwis', 'Service')}</option>
-            </select>
-          </div>
+        <div className="games-filter">
+          <label>{t('games.filterLabel')}</label>
+          <input
+            type="number" min="1" value={filterPeople}
+            onChange={e => setFilterPeople(e.target.value)}
+          />
+          {filterPeople && <button className="btn-ghost" onClick={() => setFilterPeople('')}><X size={14} /></button>}
         </div>
 
-        {filtered.length === 0 && <p className="empty-state">{tr('Brak gier w kolekcji.', 'No games in collection.')}</p>}
+        {filtered.length === 0 && <p className="empty-state">{t('games.emptyState')}</p>}
 
         <ul className="item-list">
-          {filtered.map(g => {
-            const sm = STATUS_META_TR[g.status] || STATUS_META_TR.Available;
-            return (
-              <li key={g.id} className={"game-card " + (editId === g.id ? 'active' : '')} onClick={() => startEdit(g)}>
-                <div className="game-cover" style={{ background: g.coverColor || '#6C3483' }}>
-                  <span className="game-cover-initial">{g.title[0]}</span>
-                </div>
-                <div className="game-card-body">
-                  <strong className="item-title">{g.title}</strong>
-                  {g.description && <p className="item-desc">{g.description}</p>}
-                  <div className="game-card-meta">
-                    <span>👥 {g.minPlayers}–{g.maxPlayers}</span>
-                    <span>⏱ {g.durationMin}min</span>
-                    <span className={"status-badge " + sm.cls}>{sm.label}</span>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
+          {filtered.map(g => (
+            <li
+              key={g.id}
+              className={`item-card ${editId === g.id ? 'active' : ''}`}
+            >
+              <div className="item-card-body" onClick={() => startEdit(g)}>
+                <strong className="item-title">{g.title}</strong>
+                <span className="item-meta">
+                  <Users size={15} /> {t('games.card.playersCount', { count: g.people })} <Dot />
+                  <Timer size={15} /> {t('games.card.hoursCount', { count: g.hours })} <Dot />
+                  {g.accessibility ? t('games.card.statusAvailable') : t('games.card.statusUnavailable')}
+                </span>
+                {g.description && <p className="item-desc">{g.description}</p>}
+              </div>
+              <div className="item-card-actions">
+                <button className="btn-icon" title={t('games.card.titleEdit')} onClick={() => startEdit(g)}><Pencil size={15} /></button>
+                <button className="btn-icon btn-danger" title={t('games.card.titleDelete')} onClick={() => handleDelete(g)}><Trash2 size={15} /></button>
+              </div>
+            </li>
+          ))}
         </ul>
       </div>
 
-      <div className={"two-col-right " + (showForm ? 'visible' : '')}>
-        {showForm ? (
-          <>
-            <div className="two-col-right-header">
-              <div>
-                <h3>{editId ? tr('Edytuj grę', 'Edit game') : tr('Nowa gra', 'New game')}</h3>
-                <p className="right-subtitle">{tr('Uzupełnij informacje o grze i jej dostępności', 'Fill in game details and availability')}</p>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-secondary" onClick={resetForm}>{tr('Anuluj', 'Cancel')}</button>
-                <button className="btn-primary" onClick={handleSubmit}>
-                  <Check size={15} /> {tr('Zapisz', 'Save')}
-                </button>
-              </div>
-            </div>
+      {/* Right — form */}
+      <div className={`two-col-right ${showForm ? 'visible' : ''}`}>
+        <div className="two-col-right-header">
+          <h3>{editId ? t('games.form.titleEdit') : t('games.form.titleNew')}</h3>
+          <button className="btn-icon" onClick={resetForm}><X size={16} /></button>
+        </div>
 
-            <div className="edit-layout">
-              <div className="edit-main">
-                <div className="form-group">
-                  <label>{tr('TYTUŁ GRY', 'GAME TITLE')}</label>
-                  <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder={tr('Nazwa gry', 'Game name')} />
-                </div>
-                <div className="form-group">
-                  <label>{tr('OPIS', 'DESCRIPTION')}</label>
-                  <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder={tr('Krótki opis gry', 'Short game description')} rows={4} />
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{tr('MIN. GRACZY', 'MIN. PLAYERS')}</label>
-                    <input type="number" min="1" value={form.minPlayers} onChange={e => setForm(f => ({ ...f, minPlayers: e.target.value }))} />
-                  </div>
-                  <div className="form-group">
-                    <label>{tr('MAX. GRACZY', 'MAX. PLAYERS')}</label>
-                    <input type="number" min="1" value={form.maxPlayers} onChange={e => setForm(f => ({ ...f, maxPlayers: e.target.value }))} />
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>{tr('CZAS GRY (MIN)', 'PLAY TIME (MIN)')}</label>
-                    <input type="number" min="5" step="5" value={form.durationMin} onChange={e => setForm(f => ({ ...f, durationMin: e.target.value }))} />
-                  </div>
-                  <div className="form-group">
-                    <label>{tr('TRUDNOŚĆ', 'DIFFICULTY')}</label>
-                    <select value={form.complexity} onChange={e => setForm(f => ({ ...f, complexity: e.target.value }))}>
-                      {COMPLEXITY_OPTIONS.map(c => <option key={c}>{c}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="edit-side">
-                <div className="form-group">
-                  <label>{tr('OKŁADKA GRY', 'GAME COVER')}</label>
-                  <div className="cover-preview" style={{ background: form.coverColor }}>
-                    <span className="cover-preview-initial">{form.title ? form.title[0] : '?'}</span>
-                  </div>
-                  <div className="color-presets">
-                    {COVER_PRESETS.map(c => (
-                      <button key={c} className={"color-dot " + (form.coverColor === c ? 'selected' : '')} style={{ background: c }} onClick={() => setForm(f => ({ ...f, coverColor: c }))} />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-group" style={{ marginTop: 16 }}>
-                  <label>{tr('STATUS', 'STATUS')}</label>
-                  <div className="status-radio-list">
-                    {STATUS_OPTIONS.map(s => (
-                      <label key={s} className={"status-radio " + (form.status === s ? 'checked' : '')}>
-                        <input type="radio" name="status" checked={form.status === s} onChange={() => setForm(f => ({ ...f, status: s }))} />
-                        <div>
-                          <span className={"status-radio-label status-label-" + s.replace(' ', '-')}>{STATUS_META_TR[s]?.label || s}</span>
-                          <span className="status-radio-desc">
-                            {s === 'Available' ? tr('Gotowa do gry', 'Ready to play') : s === 'In Use' ? tr('Aktualnie używana', 'Currently in use') : tr('Uszkodzona lub brakuje części', 'Damaged or missing parts')}
-                          </span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {editId && (
-                  <button className="btn-archive" onClick={() => handleDelete({ id: editId, title: form.title })}>
-                    <Archive size={14} /> {tr('USUŃ Z KATALOGU', 'REMOVE FROM CATALOG')}
-                  </button>
-                )}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="empty-state" style={{ margin: 'auto' }}>
-            <p>{tr('Wybierz grę z listy lub dodaj nową', 'Select a game or add a new one')}</p>
+        <div className="form-group">
+          <label>{t('games.form.labelTitle')}</label>
+          <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder={t('games.form.placeholderTitle')} />
+        </div>
+        <div className="form-group">
+          <label>{t('games.form.labelDesc')}</label>
+          <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder={t('games.form.placeholderDesc')} rows={3} />
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label>{t('games.form.labelPlayers')}</label>
+            <input type="number" min="1" value={form.people} onChange={e => setForm(f => ({ ...f, people: e.target.value }))} />
           </div>
-        )}
+          <div className="form-group">
+            <label>{t('games.form.labelHours')}</label>
+            <input type="number" min="0.5" step="0.5" value={form.hours} onChange={e => setForm(f => ({ ...f, hours: e.target.value }))} />
+          </div>
+        </div>
+        <div className="form-group form-checkbox">
+          <label>
+            <input type="checkbox" checked={form.accessibility} onChange={e => setForm(f => ({ ...f, accessibility: e.target.checked }))} />
+            {t('games.form.labelAccessibility')}
+          </label>
+        </div>
+
+        <div className="form-actions">
+          <button className="btn-primary" onClick={handleSubmit}>
+            <Check size={15} /> {editId ? t('games.form.btnSubmitEdit') : t('games.form.btnSubmitNew')}
+          </button>
+          <button className="btn-secondary" onClick={resetForm}>{t('games.form.btnCancel')}</button>
+        </div>
       </div>
     </div>
   );

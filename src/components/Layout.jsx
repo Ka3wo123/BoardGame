@@ -3,24 +3,19 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
-  Menu, Power, Sun, Moon, Globe,
+  Menu, Power, Sun, Moon,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
 import './Layout.css';
+import { useTranslation } from 'react-i18next';
+import LanguageToggle from './LanguageToggle';
 
-const navItemsData = [
-  { path: '/games',        icon: Gamepad2,    labelPl: 'Kolekcja gier',  labelEn: 'Game Library' },
-  { path: '/drawing',      icon: Shuffle,     labelPl: 'Losowanie',       labelEn: 'Drawing' },
-  { path: '/tournaments',  icon: Trophy,      labelPl: 'Turnieje',        labelEn: 'Tournaments' },
-  { path: '/events',       icon: CalendarDays, labelPl: 'Wydarzenia',     labelEn: 'Events' },
-  { path: '/community',    icon: Users,        labelPl: 'Społeczność',    labelEn: 'Community' },
-];
 
 const TOAST_META = {
   success: { icon: CheckCircle2, color: '#4CAF50' },
-  error:   { icon: XCircle,      color: 'var(--color14)' },
+  error: { icon: XCircle, color: 'var(--color14)' },
   warning: { icon: AlertTriangle, color: 'var(--color6)' },
-  info:    { icon: Info,          color: 'var(--purple)' },
+  info: { icon: Info, color: 'var(--purple)' },
 };
 
 function ToastContainer() {
@@ -46,7 +41,8 @@ function ToastContainer() {
 }
 
 export default function Layout() {
-  const { user, logout, theme, toggleTheme, language, toggleLanguage } = useApp();
+  const { user, logout, theme, toggleTheme } = useApp();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -56,7 +52,16 @@ export default function Layout() {
     ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '?';
 
+  const navItems = [
+    { path: '/games', icon: Gamepad2, label: t('nav.games') },
+    { path: '/drawing', icon: Shuffle, label: t('nav.drawing') },
+    { path: '/tournaments', icon: Trophy, label: t('nav.tournaments') },
+    { path: '/events', icon: CalendarDays, label: t('nav.events') },
+    { path: '/community', icon: Users, label: t('nav.community') },
+  ];
   const close = () => setSidebarOpen(false);
+
+  const currentLanguage = i18n.language;
 
   return (
     <div className="app-root">
@@ -77,7 +82,7 @@ export default function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          {navItemsData.map(({ path, icon: Icon, labelPl, labelEn }) => (
+          {navItems.map(({ path, icon: Icon, label }) => (
             <NavLink
               key={path}
               to={path}
@@ -85,20 +90,24 @@ export default function Layout() {
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
               <Icon size={18} className="nav-icon" />
-              <span className="nav-label">{language === 'en' ? labelEn : labelPl}</span>
+              <span className="nav-label">{label}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="sidebar-theme">
-          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}>
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? t('theme.lightTitle') : t('theme.darkTitle')}
+          >
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}</span>
+            <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
           </button>
-          <button className="theme-toggle lang-toggle" onClick={toggleLanguage} title={language === 'pl' ? 'Switch to English' : 'Zmień na Polski'}>
-            <Globe size={16} />
-            <span>{language === 'pl' ? 'English' : 'Polski'}</span>
-          </button>
+          <LanguageToggle />
+          <div />
+
+
         </div>
 
         <div className="sidebar-user">
