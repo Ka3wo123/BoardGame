@@ -3,17 +3,17 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
-  Menu, Power, Sun, Moon,
+  Menu, Power, Sun, Moon, Globe,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
 import './Layout.css';
 
-const navItems = [
-  { path: '/games',        icon: Gamepad2,    label: 'Kolekcja gier' },
-  { path: '/drawing',      icon: Shuffle,     label: 'Losowanie' },
-  { path: '/tournaments',  icon: Trophy,      label: 'Turnieje' },
-  { path: '/events',       icon: CalendarDays, label: 'Wydarzenia' },
-  { path: '/community',    icon: Users,        label: 'Społeczność' },
+const navItemsData = [
+  { path: '/games',        icon: Gamepad2,    labelPl: 'Kolekcja gier',  labelEn: 'Game Library' },
+  { path: '/drawing',      icon: Shuffle,     labelPl: 'Losowanie',       labelEn: 'Drawing' },
+  { path: '/tournaments',  icon: Trophy,      labelPl: 'Turnieje',        labelEn: 'Tournaments' },
+  { path: '/events',       icon: CalendarDays, labelPl: 'Wydarzenia',     labelEn: 'Events' },
+  { path: '/community',    icon: Users,        labelPl: 'Społeczność',    labelEn: 'Community' },
 ];
 
 const TOAST_META = {
@@ -46,7 +46,7 @@ function ToastContainer() {
 }
 
 export default function Layout() {
-  const { user, logout, theme, toggleTheme } = useApp();
+  const { user, logout, theme, toggleTheme, language, toggleLanguage } = useApp();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -77,7 +77,7 @@ export default function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          {navItems.map(({ path, icon: Icon, label }) => (
+          {navItemsData.map(({ path, icon: Icon, labelPl, labelEn }) => (
             <NavLink
               key={path}
               to={path}
@@ -85,15 +85,19 @@ export default function Layout() {
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
               <Icon size={18} className="nav-icon" />
-              <span className="nav-label">{label}</span>
+              <span className="nav-label">{language === 'en' ? labelEn : labelPl}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="sidebar-theme">
-          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? 'Włącz tryb jasny' : 'Włącz tryb ciemny'}>
+          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}>
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{theme === 'dark' ? 'Tryb jasny' : 'Tryb ciemny'}</span>
+            <span>{theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}</span>
+          </button>
+          <button className="theme-toggle lang-toggle" onClick={toggleLanguage} title={language === 'pl' ? 'Switch to English' : 'Zmień na Polski'}>
+            <Globe size={16} />
+            <span>{language === 'pl' ? 'English' : 'Polski'}</span>
           </button>
         </div>
 

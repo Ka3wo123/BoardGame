@@ -222,11 +222,17 @@
 }
 
 /* ── Theme toggle on login page ── */
-.login-theme-btn {
+.login-controls {
   position: fixed;
   top: 16px;
   right: 20px;
   z-index: 100;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.login-theme-btn {
   display: flex;
   align-items: center;
   gap: 7px;
