@@ -6,14 +6,24 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'pl');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-lang', language);
+    localStorage.setItem('language', language);
+  }, [language]);
+
   const toggleTheme = useCallback(() => {
     setTheme(t => t === 'dark' ? 'light' : 'dark');
+  }, []);
+
+  const toggleLanguage = useCallback(() => {
+    setLanguage(l => l === 'pl' ? 'en' : 'pl');
   }, []);
 
   const login = (userData) => setUser(userData);
@@ -32,7 +42,7 @@ export function AppProvider({ children }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme }}>
+    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme, language, toggleLanguage }}>
       {children}
     </AppContext.Provider>
   );

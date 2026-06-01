@@ -2,19 +2,21 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
 }
 
 .tcpage-cols {
   display: flex;
   gap: 15px;
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .tcpage-left {
   width: 300px;
   flex-shrink: 0;
   overflow-y: auto;
+  padding-right: 2px;
 }
 
 .tcpage-right {
@@ -24,18 +26,10 @@
 
 .list-item {
   cursor: pointer;
-  transition: background 0.15s;
-  border: 2px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
 }
-.list-item:hover { background: #24155A; }
-.list-item-active { border-color: var(--purple) !important; }
-
-.action-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
+.list-item:hover { background: var(--panel-hover); }
+.list-item-active { border-color: var(--purple) !important; background: var(--panel-active) !important; }
 
 .radio-row {
   display: flex;
@@ -66,38 +60,12 @@
 
 .score-form { padding: 12px; }
 
-/* Data table */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  color: var(--title1);
-}
-.data-table th {
-  background: var(--border-color);
-  color: var(--color6);
-  padding: 6px 8px;
-  text-align: left;
-  font-weight: 600;
-}
-.data-table td { padding: 6px 8px; }
-.data-table .row-alt { background: var(--card-inner); }
-
 /* Attendee / list rows */
 .attendee-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-}
-.badge-pending { background: #2A1B5E; color: var(--color6); }
 .badge-confirmed { background: #0A2D1A; color: #4CAF50; }
 .badge-declined { background: #2D0A0A; color: var(--color14); }
 .badge-planned { background: #1C0E49; color: var(--color8); }
