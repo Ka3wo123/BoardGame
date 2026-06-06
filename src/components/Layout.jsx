@@ -6,6 +6,7 @@ import {
   Menu, Power, Sun, Moon, Globe,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
+import BoardGameBackground from './BoardGameBackground';
 import './Layout.css';
 
 const navItemsData = [
@@ -60,6 +61,8 @@ export default function Layout() {
 
   return (
     <div className="app-root">
+      <BoardGameBackground />
+
       <button className="hamburger" onClick={() => setSidebarOpen(o => !o)}>
         <Menu size={20} />
       </button>

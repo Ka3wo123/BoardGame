@@ -174,7 +174,7 @@ export default function DrawingPage() {
             </div>
           ) : (
             <div className="drawing-placeholder">
-              <RefreshCw size={40} color="var(--border-color)" />
+              <RefreshCw size={40} color="var(--purple)" />
               <p>{tr('Skonfiguruj ustawienia i kliknij', 'Configure settings and click')}<br /><strong>{tr('LOSUJ GRY', 'DRAW GAMES')}</strong></p>
             </div>
           )}
