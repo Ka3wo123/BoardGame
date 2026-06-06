@@ -1,0 +1,145 @@
+.nf-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--primary-bg1) 0%, var(--primary-bg2) 100%);
+  box-sizing: border-box;
+}
+
+.nf-content {
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+.nf-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.nf-animation-dice {
+  color: var(--color6);
+  animation: floatDice 3s ease-in-out infinite;
+}
+
+.nf-shadow {
+  width: 50px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  margin: 8px auto 0;
+  filter: blur(2px);
+  animation: shrinkShadow 3s ease-in-out infinite;
+}
+
+.nf-title {
+  font-size: 6rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1;
+  background: linear-gradient(180deg, #FFF 0%, var(--text2) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: white;
+}
+
+.nf-subtitle {
+  font-size: 1.5rem;
+  color: var(--title1);
+  margin: 10px 0 16px;
+  font-weight: 600;
+}
+
+.nf-description {
+  font-size: 0.95rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+/* Przyciski */
+.nf-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-nf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  border: none;
+}
+
+.btn-nf:active {
+  transform: scale(0.98);
+}
+
+.btn-nf-primary {
+  background: var(--purple);
+  color: white;
+}
+
+.btn-nf-primary:hover {
+  background: var(--panel-active);
+}
+
+.btn-nf-secondary {
+  background: var(--panel-color);
+  color: var(--text1);
+  border: 1px solid var(--border-color);
+}
+
+.btn-nf-secondary:hover {
+  background: var(--panel-hover);
+}
+
+/* Responsywność dla mobile */
+@media (max-width: 480px) {
+  .nf-title {
+    font-size: 4.5rem;
+  }
+  .nf-subtitle {
+    font-size: 1.25rem;
+  }
+  .nf-actions {
+    flex-direction: column-reverse; /* Wygodniejsze ułożenie kciuka na telefonie */
+    gap: 10px;
+  }
+  .btn-nf {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Klucze animacji */
+@keyframes floatDice {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(8deg);
+  }
+}
+
+@keyframes shrinkShadow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+}
