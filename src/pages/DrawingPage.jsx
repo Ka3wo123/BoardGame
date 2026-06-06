@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { RefreshCw, CheckCircle, Clock, Users, Settings2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import * as db from '../data/db';
 import './DrawingPage.css';
 
 const WEIGHTING_OPTIONS = ['Losowo', 'Preferuj krótkie', 'Preferuj długie', 'Preferuj trudne'];
 
-const COMPLEXITY_LABEL = {
-  'Łatwa': 'Łatwa',
-  'Średnia': 'Średnia',
-  'Trudna': 'Trudna',
-  'Ekspercka': 'Ekspercka',
-  Easy: 'Łatwa',
-  Medium: 'Średnia',
-  Hard: 'Trudna',
-  Expert: 'Ekspercka',
+const WEIGHTING_KEY = {
+  'Losowo': 'drawing.weighting.random',
+  'Preferuj krótkie': 'drawing.weighting.preferShort',
+  'Preferuj długie': 'drawing.weighting.preferLong',
+  'Preferuj trudne': 'drawing.weighting.preferHard',
+};
+
+const COMPLEXITY_KEY = {
+  'Łatwa': 'drawing.complexity.easy',
+  'Średnia': 'drawing.complexity.medium',
+  'Trudna': 'drawing.complexity.hard',
+  'Ekspercka': 'drawing.complexity.expert',
+  Easy: 'drawing.complexity.easy',
+  Medium: 'drawing.complexity.medium',
+  Hard: 'drawing.complexity.hard',
+  Expert: 'drawing.complexity.expert',
 };
 
 const COMPLEXITY_COLOR = {
@@ -25,18 +33,8 @@ const COMPLEXITY_COLOR = {
 };
 
 export default function DrawingPage() {
-  const { user, addToast, language } = useApp();
-  const tr = (pl, en) => language === 'en' ? en : pl;
-  const WEIGHTING_TR = {
-    'Losowo': tr('Losowo', 'Random'),
-    'Preferuj krótkie': tr('Preferuj krótkie', 'Prefer short'),
-    'Preferuj długie': tr('Preferuj długie', 'Prefer long'),
-    'Preferuj trudne': tr('Preferuj trudne', 'Prefer hard'),
-  };
-  const COMPLEXITY_LABEL_TR = {
-    'Łatwa': tr('Łatwa', 'Easy'), 'Średniat': tr('Średnia', 'Medium'), 'Trudna': tr('Trudna', 'Hard'), 'Ekspercka': tr('Ekspercka', 'Expert'),
-    Easy: tr('Łatwa', 'Easy'), Medium: tr('Średnia', 'Medium'), Hard: tr('Trudna', 'Hard'), Expert: tr('Ekspercka', 'Expert'),
-  };
+  const { user, addToast } = useApp();
+  const { t, i18n } = useTranslation();
   const [minPlayers, setMinPlayers] = useState(4);
   const [weighting, setWeighting] = useState('Preferuj krótkie');
   const [sessions, setSessions] = useState([]);
@@ -48,7 +46,7 @@ export default function DrawingPage() {
     setConfirmed(false);
     const result = await db.createDrawingAsync(user.id, Number(minPlayers), weighting);
     if (result.length === 0) {
-      addToast(tr('Brak dostępnych gier dla podanej liczby graczy.', 'No games available for this player count.'), 'warning');
+      addToast(t('drawing.toasts.noGames'), 'warning');
       setSessions([]);
       setDrawn(true);
       return;
@@ -56,27 +54,26 @@ export default function DrawingPage() {
     setSessions(result);
     setTotalMins(result.reduce((sum, s) => sum + Number(s.duration), 0));
     setDrawn(true);
-    addToast(tr('Wylosowano ', 'Drew ') + result.length + tr(' gier.', ' games.'), 'success');
+    addToast(t('drawing.toasts.success', { count: result.length }), 'success');
   };
 
   const handleReroll = () => { handleDraw(); };
 
   const handleConfirm = () => {
     setConfirmed(true);
-    addToast(tr('Sesja potwierdzona!', 'Session confirmed!'), 'success');
+    addToast(t('drawing.toasts.confirmed'), 'success');
   };
 
   const totalHoursDisplay = totalMins >= 60
-    ? '~' + (totalMins / 60).toFixed(1) + (tr(' godz.', 'h'))
+    ? '~' + (totalMins / 60).toFixed(1) + t('drawing.hoursShort')
     : totalMins + ' min';
 
   return (
     <div className="drawing-page">
       <div className="drawing-header">
-        <h1 className="drawing-title">{tr('Losowanie gry', 'Game drawing')}</h1>
+        <h1 className="drawing-title">{t('drawing.headerTitle')}</h1>
         <p className="drawing-subtitle">
-          {tr('Nie wiesz w co zagrać? Algorytm dobierze optymalne gry na podstawie liczby graczy i Twojej biblioteki.',
-              "Not sure what to play? The algorithm will pick optimal games based on player count and your library.")}
+          {t('drawing.headerSubtitle')}
         </p>
       </div>
 
@@ -86,24 +83,24 @@ export default function DrawingPage() {
           <div className="config-card">
             <div className="config-card-title">
               <Settings2 size={15} />
-              <span>{tr('Konfiguracja', 'Configuration')}</span>
+              <span>{t('drawing.configTitle')}</span>
             </div>
 
-            <label className="cfg-label">{tr('MINIMALNA LICZBA GRACZY', 'MINIMUM PLAYERS')}</label>
+            <label className="cfg-label">{t('drawing.minPlayersCfg')}</label>
             <div className="player-stepper">
               <button className="stepper-btn" onClick={() => setMinPlayers(p => Math.max(1, p - 1))}>&#8722;</button>
               <span className="stepper-value">{minPlayers}</span>
               <button className="stepper-btn" onClick={() => setMinPlayers(p => p + 1)}>+</button>
             </div>
 
-            <label className="cfg-label" style={{ marginTop: 16 }}>{tr('PREFERENCJE DOBORU', 'SELECTION PREFERENCE')}</label>
+            <label className="cfg-label" style={{ marginTop: 16 }}>{t('drawing.selectionPreference')}</label>
             <select className="cfg-select" value={weighting} onChange={e => setWeighting(e.target.value)}>
-              {WEIGHTING_OPTIONS.map(o => <option key={o} value={o}>{WEIGHTING_TR[o] || o}</option>)}
+              {WEIGHTING_OPTIONS.map(o => <option key={o} value={o}>{t(WEIGHTING_KEY[o]) || o}</option>)}
             </select>
 
             <button className="btn-draw" onClick={handleDraw}>
               <RefreshCw size={16} />
-              {tr('LOSUJ GRY', 'DRAW GAMES')}
+              {t('drawing.btnDrawGames')}
             </button>
           </div>
 
@@ -111,7 +108,7 @@ export default function DrawingPage() {
             <div className="playtime-card">
               <div className="playtime-icon"><Clock size={22} color="var(--purple)" /></div>
               <div>
-                <p className="playtime-label">{tr('CZAS SESJI', 'SESSION TIME')}</p>
+                <p className="playtime-label">{t('drawing.sessionTime')}</p>
                 <p className="playtime-value">{totalHoursDisplay}</p>
               </div>
             </div>
@@ -123,8 +120,8 @@ export default function DrawingPage() {
           {drawn && sessions.length > 0 ? (
             <>
               <div className="results-header">
-                <h2 className="results-title">{tr('Wylosowane gry', 'Drawn games')}</h2>
-                <span className="results-badge">{sessions.length} {tr('ZNALEZIONYCH', 'FOUND')}</span>
+                <h2 className="results-title">{t('drawing.resultsTitle')}</h2>
+                <span className="results-badge">{sessions.length} {t('drawing.resultsFound')}</span>
               </div>
 
               <div className="session-list">
@@ -137,17 +134,17 @@ export default function DrawingPage() {
                       <div className="session-top-row">
                         <div>
                           <p className="session-name">{s.title}</p>
-                          <p className="session-desc">{s.description || tr('Gra planszowa', 'Board game')}</p>
+                          <p className="session-desc">{s.description || t('drawing.boardGame')}</p>
                         </div>
                         <span className="session-mins">{s.duration} MIN</span>
                       </div>
                       <div className="session-meta-row">
                         <span className="session-meta-item">
-                          <Users size={12} /> {s.minPlayers}-{s.maxPlayers} {tr('graczy', 'players')}
+                          <Users size={12} /> {s.minPlayers}-{s.maxPlayers} {t('drawing.players')}
                         </span>
                         <span className="session-meta-item">
                           <span className="complexity-dot" style={{ background: COMPLEXITY_COLOR[s.complexity] || '#aaa' }} />
-                          {COMPLEXITY_LABEL_TR[s.complexity] || s.complexity}
+                          {COMPLEXITY_KEY[s.complexity] ? t(COMPLEXITY_KEY[s.complexity]) : s.complexity}
                         </span>
                       </div>
                     </div>
@@ -157,25 +154,25 @@ export default function DrawingPage() {
 
               {!confirmed ? (
                 <div className="session-actions">
-                  <button className="btn-reroll" onClick={handleReroll}>{tr('LOSUJ PONOWNIE', 'REDRAW')}</button>
-                  <button className="btn-confirm" onClick={handleConfirm}>{tr('POTWIERDŻ SESJĘ', 'CONFIRM SESSION')}</button>
+                  <button className="btn-reroll" onClick={handleReroll}>{t('drawing.btnReroll')}</button>
+                  <button className="btn-confirm" onClick={handleConfirm}>{t('drawing.btnConfirm')}</button>
                 </div>
               ) : (
                 <div className="session-confirmed">
                   <CheckCircle size={18} color="#2ed573" />
-                  <span>{tr('Sesja potwierdzona!', 'Session confirmed!')}</span>
+                  <span>{t('drawing.sessionConfirmed')}</span>
                 </div>
               )}
             </>
           ) : drawn ? (
             <div className="drawing-empty">
-              <p>{tr('Brak dostępnych gier dla ', 'No games available for ')}{minPlayers}+ {tr('graczy.', 'players.')}</p>
-              <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 4 }}>{tr('Dodaj gry do kolekcji lub zmień filtry.', 'Add games to your collection or change filters.')}</p>
+              <p>{t('drawing.emptyForPlayers')}{minPlayers}+ {t('drawing.emptyPlayersSuffix')}</p>
+              <p style={{ fontSize: 12, color: 'var(--text2)', marginTop: 4 }}>{t('drawing.emptyHint')}</p>
             </div>
           ) : (
             <div className="drawing-placeholder">
               <RefreshCw size={40} color="var(--purple)" />
-              <p>{tr('Skonfiguruj ustawienia i kliknij', 'Configure settings and click')}<br /><strong>{tr('LOSUJ GRY', 'DRAW GAMES')}</strong></p>
+              <p>{t('drawing.placeholderText')}<br /><strong>{t('drawing.btnDrawGames')}</strong></p>
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
   Menu, Power, Sun, Moon, Globe,
@@ -10,11 +11,11 @@ import BoardGameBackground from './BoardGameBackground';
 import './Layout.css';
 
 const navItemsData = [
-  { path: '/games',        icon: Gamepad2,    labelPl: 'Kolekcja gier',  labelEn: 'Game Library' },
-  { path: '/drawing',      icon: Shuffle,     labelPl: 'Losowanie',       labelEn: 'Drawing' },
-  { path: '/tournaments',  icon: Trophy,      labelPl: 'Turnieje',        labelEn: 'Tournaments' },
-  { path: '/events',       icon: CalendarDays, labelPl: 'Wydarzenia',     labelEn: 'Events' },
-  { path: '/community',    icon: Users,        labelPl: 'Społeczność',    labelEn: 'Community' },
+  { path: '/games',        icon: Gamepad2,    labelKey: 'nav.games' },
+  { path: '/drawing',      icon: Shuffle,     labelKey: 'nav.drawing' },
+  { path: '/tournaments',  icon: Trophy,      labelKey: 'nav.tournaments' },
+  { path: '/events',       icon: CalendarDays, labelKey: 'nav.events' },
+  { path: '/community',    icon: Users,        labelKey: 'nav.community' },
 ];
 
 const TOAST_META = {
@@ -47,7 +48,8 @@ function ToastContainer() {
 }
 
 export default function Layout() {
-  const { user, logout, theme, toggleTheme, language, toggleLanguage } = useApp();
+  const { user, logout, theme, toggleTheme, toggleLanguage } = useApp();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -80,7 +82,7 @@ export default function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          {navItemsData.map(({ path, icon: Icon, labelPl, labelEn }) => (
+          {navItemsData.map(({ path, icon: Icon, labelKey }) => (
             <NavLink
               key={path}
               to={path}
@@ -88,19 +90,19 @@ export default function Layout() {
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
               <Icon size={18} className="nav-icon" />
-              <span className="nav-label">{language === 'en' ? labelEn : labelPl}</span>
+              <span className="nav-label">{t(labelKey)}</span>
             </NavLink>
           ))}
         </nav>
 
         <div className="sidebar-theme">
-          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}>
+          <button className="theme-toggle" onClick={toggleTheme} title={theme === 'dark' ? t('theme.lightTitle') : t('theme.darkTitle')}>
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-            <span>{theme === 'dark' ? (language === 'en' ? 'Light mode' : 'Tryb jasny') : (language === 'en' ? 'Dark mode' : 'Tryb ciemny')}</span>
+            <span>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</span>
           </button>
-          <button className="theme-toggle lang-toggle" onClick={toggleLanguage} title={language === 'pl' ? 'Switch to English' : 'Zmień na Polski'}>
+          <button className="theme-toggle lang-toggle" onClick={toggleLanguage} title={i18n.language === 'pl' ? t('lang.switchToEnglish') : t('lang.switchToPolish')}>
             <Globe size={16} />
-            <span>{language === 'pl' ? 'English' : 'Polski'}</span>
+            <span>{i18n.language === 'pl' ? t('lang.toEnglish') : t('lang.toPolish')}</span>
           </button>
         </div>
 
@@ -110,7 +112,7 @@ export default function Layout() {
             <p className="user-name">{user?.displayName}</p>
             <p className="user-email">{user?.email}</p>
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Wyloguj">
+          <button className="logout-btn" onClick={handleLogout} title={t('user.logout')}>
             <Power size={16} />
           </button>
         </div>

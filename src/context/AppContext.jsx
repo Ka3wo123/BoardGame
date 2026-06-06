@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import i18n from 'i18next';
 
 const AppContext = createContext(null);
 
@@ -6,24 +7,19 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'pl');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    document.documentElement.setAttribute('data-lang', language);
-    localStorage.setItem('language', language);
-  }, [language]);
-
   const toggleTheme = useCallback(() => {
     setTheme(t => t === 'dark' ? 'light' : 'dark');
   }, []);
 
   const toggleLanguage = useCallback(() => {
-    setLanguage(l => l === 'pl' ? 'en' : 'pl');
+    const next = i18n.language === 'pl' ? 'en' : 'pl';
+    i18n.changeLanguage(next);
   }, []);
 
   const login = (userData) => setUser(userData);
@@ -42,7 +38,7 @@ export function AppProvider({ children }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme, language, toggleLanguage }}>
+    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme, toggleLanguage }}>
       {children}
     </AppContext.Provider>
   );

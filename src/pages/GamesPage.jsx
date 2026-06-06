@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Check, Archive } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import * as db from '../data/db';
@@ -6,25 +7,19 @@ import './TwoColPage.css';
 import './GamesPage.css';
 
 const COMPLEXITY_OPTIONS = ['Łatwa', 'Średnia', 'Trudna', 'Ekspercka'];
+const COMPLEXITY_KEY = { 'Łatwa': 'games.complexity.easy', 'Średnia': 'games.complexity.medium', 'Trudna': 'games.complexity.hard', 'Ekspercka': 'games.complexity.expert' };
 const STATUS_OPTIONS = ['Available', 'In Use', 'Maintenance'];
-const STATUS_LABEL = { Available: 'Dostępna', 'In Use': 'W użyciu', Maintenance: 'Serwis' };
 const EMPTY_FORM = { title: '', description: '', minPlayers: 2, maxPlayers: 4, durationMin: 60, complexity: 'Średnia', status: 'Available', coverColor: '#6C3483' };
 const STATUS_META = {
-  Available:   { label: 'DOSTĘPNA',  cls: 'badge-available' },
-  'In Use':    { label: 'W UŻYCIU',  cls: 'badge-inuse' },
-  Maintenance: { label: 'SERWIS',    cls: 'badge-maintenance' },
+  Available:   { labelKey: 'games.status.available',  cls: 'badge-available' },
+  'In Use':    { labelKey: 'games.status.inUse',      cls: 'badge-inuse' },
+  Maintenance: { labelKey: 'games.status.service',    cls: 'badge-maintenance' },
 };
 const COVER_PRESETS = ['#6C3483','#1A5276','#7D6608','#1B4F72','#145A32','#7B241C','#4A235A','#1F618D'];
 
 export default function GamesPage() {
-  const { user, addToast, language } = useApp();
-  const tr = (pl, en) => language === 'en' ? en : pl;
-  const COMPLEXITY_EN = { 'Łatwa': 'Easy', 'Średniat': 'Medium', 'Trudna': 'Hard', 'Ekspercka': 'Expert' };
-  const STATUS_META_TR = {
-    Available:   { label: tr('DOSTĘPNA', 'AVAILABLE'), cls: 'badge-available' },
-    'In Use':    { label: tr('W UŻYCIU', 'IN USE'),   cls: 'badge-inuse' },
-    Maintenance: { label: tr('SERWIS', 'SERVICE'),  cls: 'badge-maintenance' },
-  };
+  const { user, addToast } = useApp();
+  const { t } = useTranslation();
   const [games, setGames] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -42,13 +37,13 @@ export default function GamesPage() {
   const resetForm = () => { setForm(EMPTY_FORM); setEditId(null); setShowForm(false); };
 
   const handleSubmit = async () => {
-    if (!form.title.trim()) { addToast(tr('Tytuł jest wymagany.', 'Title is required.'), 'error'); return; }
+    if (!form.title.trim()) { addToast(t('games.toasts.requiredTitle'), 'error'); return; }
     if (editId) {
       await db.updateBoardGameAsync(editId, form.title, form.description, form.minPlayers, form.maxPlayers, form.durationMin, form.complexity, form.status, form.coverColor);
-      addToast(tr('Zaktualizowano "', 'Updated "') + form.title + '"', 'success');
+      addToast(t('games.toasts.updated', { title: form.title }), 'success');
     } else {
       await db.addBoardGameAsync(user.id, form.title, form.description, form.minPlayers, form.maxPlayers, form.durationMin, form.complexity, form.status, form.coverColor);
-      addToast(tr('Dodano "', 'Added "') + form.title + '"', 'success');
+      addToast(t('games.toasts.added', { title: form.title }), 'success');
     }
     resetForm(); load();
   };
@@ -60,7 +55,7 @@ export default function GamesPage() {
 
   const handleDelete = async g => {
     await db.deleteBoardGameAsync(g.id);
-    addToast(tr('Zarchiwizowano "', 'Removed "') + g.title + '"', 'info');
+    addToast(t('games.toasts.archived', { title: g.title }), 'info');
     if (editId === g.id) resetForm();
     load();
   };
@@ -76,38 +71,38 @@ export default function GamesPage() {
       <div className="two-col-left">
         <div className="two-col-header">
           <div>
-            <h2>{tr('Biblioteka gier', 'Game library')}</h2>
-            <span className="total-badge">{games.length} {tr('ŁĄCZNIE', 'TOTAL')}</span>
+            <h2>{t('games.libraryTitle')}</h2>
+            <span className="total-badge">{games.length} {t('games.total')}</span>
           </div>
           <button className="btn-primary" onClick={() => { resetForm(); setShowForm(true); }}>
-            <Plus size={16} /> {tr('Dodaj grę', 'Add game')}
+            <Plus size={16} /> {t('games.btnAdd')}
           </button>
         </div>
 
         <div className="games-filters">
           <div className="filter-group">
-            <span className="filter-label">{tr('LICZBA GRACZY', 'PLAYERS')}</span>
+            <span className="filter-label">{t('games.filters.playersLabel')}</span>
             <select value={filterPlayers} onChange={e => setFilterPlayers(e.target.value)} className="filter-select">
-              <option value="">{tr('Dowolna', 'Any')}</option>
-              {[2,3,4,5,6,8].map(n => <option key={n} value={n}>{n}+ {tr('graczy', 'players')}</option>)}
+              <option value="">{t('games.filters.any')}</option>
+              {[2,3,4,5,6,8].map(n => <option key={n} value={n}>{n}+ {t('games.filters.players')}</option>)}
             </select>
           </div>
           <div className="filter-group">
-            <span className="filter-label">{tr('DOSTĘPNOŚĆ', 'AVAILABILITY')}</span>
+            <span className="filter-label">{t('games.filters.availabilityLabel')}</span>
             <select value={filterAvail} onChange={e => setFilterAvail(e.target.value)} className="filter-select">
-              <option value="Wszystkie">{tr('Wszystkie', 'All')}</option>
-              <option value="Available">{tr('Dostępna', 'Available')}</option>
-              <option value="In Use">{tr('W użyciu', 'In Use')}</option>
-              <option value="Maintenance">{tr('Serwis', 'Service')}</option>
+              <option value="Wszystkie">{t('games.filters.all')}</option>
+              <option value="Available">{t('games.filters.available')}</option>
+              <option value="In Use">{t('games.filters.inUse')}</option>
+              <option value="Maintenance">{t('games.filters.service')}</option>
             </select>
           </div>
         </div>
 
-        {filtered.length === 0 && <p className="empty-state">{tr('Brak gier w kolekcji.', 'No games in collection.')}</p>}
+        {filtered.length === 0 && <p className="empty-state">{t('games.emptyState')}</p>}
 
         <ul className="item-list">
           {filtered.map(g => {
-            const sm = STATUS_META_TR[g.status] || STATUS_META_TR.Available;
+            const sm = STATUS_META[g.status] || STATUS_META.Available;
             return (
               <li key={g.id} className={"game-card " + (editId === g.id ? 'active' : '')} onClick={() => startEdit(g)}>
                 <div className="game-cover" style={{ background: g.coverColor || '#6C3483' }}>
@@ -119,7 +114,7 @@ export default function GamesPage() {
                   <div className="game-card-meta">
                     <span>👥 {g.minPlayers}–{g.maxPlayers}</span>
                     <span>⏱ {g.durationMin}min</span>
-                    <span className={"status-badge " + sm.cls}>{sm.label}</span>
+                    <span className={"status-badge " + sm.cls}>{t(sm.labelKey)}</span>
                   </div>
                 </div>
               </li>
@@ -133,13 +128,13 @@ export default function GamesPage() {
           <>
             <div className="two-col-right-header">
               <div>
-                <h3>{editId ? tr('Edytuj grę', 'Edit game') : tr('Nowa gra', 'New game')}</h3>
-                <p className="right-subtitle">{tr('Uzupełnij informacje o grze i jej dostępności', 'Fill in game details and availability')}</p>
+                <h3>{editId ? t('games.editForm.titleEdit') : t('games.editForm.titleNew')}</h3>
+                <p className="right-subtitle">{t('games.editForm.subtitle')}</p>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button className="btn-secondary" onClick={resetForm}>{tr('Anuluj', 'Cancel')}</button>
+                <button className="btn-secondary" onClick={resetForm}>{t('games.editForm.cancel')}</button>
                 <button className="btn-primary" onClick={handleSubmit}>
-                  <Check size={15} /> {tr('Zapisz', 'Save')}
+                  <Check size={15} /> {t('games.editForm.save')}
                 </button>
               </div>
             </div>
@@ -147,32 +142,32 @@ export default function GamesPage() {
             <div className="edit-layout">
               <div className="edit-main">
                 <div className="form-group">
-                  <label>{tr('TYTUŁ GRY', 'GAME TITLE')}</label>
-                  <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder={tr('Nazwa gry', 'Game name')} />
+                  <label>{t('games.editForm.gameTitle')}</label>
+                  <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder={t('games.editForm.gameTitlePlaceholder')} />
                 </div>
                 <div className="form-group">
-                  <label>{tr('OPIS', 'DESCRIPTION')}</label>
-                  <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder={tr('Krótki opis gry', 'Short game description')} rows={4} />
+                  <label>{t('games.editForm.description')}</label>
+                  <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder={t('games.editForm.descriptionPlaceholder')} rows={4} />
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>{tr('MIN. GRACZY', 'MIN. PLAYERS')}</label>
+                    <label>{t('games.editForm.minPlayers')}</label>
                     <input type="number" min="1" value={form.minPlayers} onChange={e => setForm(f => ({ ...f, minPlayers: e.target.value }))} />
                   </div>
                   <div className="form-group">
-                    <label>{tr('MAX. GRACZY', 'MAX. PLAYERS')}</label>
+                    <label>{t('games.editForm.maxPlayers')}</label>
                     <input type="number" min="1" value={form.maxPlayers} onChange={e => setForm(f => ({ ...f, maxPlayers: e.target.value }))} />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>{tr('CZAS GRY (MIN)', 'PLAY TIME (MIN)')}</label>
+                    <label>{t('games.editForm.playTime')}</label>
                     <input type="number" min="5" step="5" value={form.durationMin} onChange={e => setForm(f => ({ ...f, durationMin: e.target.value }))} />
                   </div>
                   <div className="form-group">
-                    <label>{tr('TRUDNOŚĆ', 'DIFFICULTY')}</label>
+                    <label>{t('games.editForm.difficulty')}</label>
                     <select value={form.complexity} onChange={e => setForm(f => ({ ...f, complexity: e.target.value }))}>
-                      {COMPLEXITY_OPTIONS.map(c => <option key={c}>{c}</option>)}
+                      {COMPLEXITY_OPTIONS.map(c => <option key={c} value={c}>{t(COMPLEXITY_KEY[c])}</option>)}
                     </select>
                   </div>
                 </div>
@@ -180,7 +175,7 @@ export default function GamesPage() {
 
               <div className="edit-side">
                 <div className="form-group">
-                  <label>{tr('OKŁADKA GRY', 'GAME COVER')}</label>
+                  <label>{t('games.editForm.cover')}</label>
                   <div className="cover-preview" style={{ background: form.coverColor }}>
                     <span className="cover-preview-initial">{form.title ? form.title[0] : '?'}</span>
                   </div>
@@ -192,15 +187,15 @@ export default function GamesPage() {
                 </div>
 
                 <div className="form-group" style={{ marginTop: 16 }}>
-                  <label>{tr('STATUS', 'STATUS')}</label>
+                  <label>{t('games.editForm.statusLabel')}</label>
                   <div className="status-radio-list">
                     {STATUS_OPTIONS.map(s => (
                       <label key={s} className={"status-radio " + (form.status === s ? 'checked' : '')}>
                         <input type="radio" name="status" checked={form.status === s} onChange={() => setForm(f => ({ ...f, status: s }))} />
                         <div>
-                          <span className={"status-radio-label status-label-" + s.replace(' ', '-')}>{STATUS_META_TR[s]?.label || s}</span>
+                          <span className={"status-radio-label status-label-" + s.replace(' ', '-')}>{t(STATUS_META[s]?.labelKey || 'games.status.available')}</span>
                           <span className="status-radio-desc">
-                            {s === 'Available' ? tr('Gotowa do gry', 'Ready to play') : s === 'In Use' ? tr('Aktualnie używana', 'Currently in use') : tr('Uszkodzona lub brakuje części', 'Damaged or missing parts')}
+                            {s === 'Available' ? t('games.status.descAvailable') : s === 'In Use' ? t('games.status.descInUse') : t('games.status.descService')}
                           </span>
                         </div>
                       </label>
@@ -210,7 +205,7 @@ export default function GamesPage() {
 
                 {editId && (
                   <button className="btn-archive" onClick={() => handleDelete({ id: editId, title: form.title })}>
-                    <Archive size={14} /> {tr('USUŃ Z KATALOGU', 'REMOVE FROM CATALOG')}
+                    <Archive size={14} /> {t('games.editForm.removeFromCatalog')}
                   </button>
                 )}
               </div>
@@ -218,7 +213,7 @@ export default function GamesPage() {
           </>
         ) : (
           <div className="empty-state" style={{ margin: 'auto' }}>
-            <p>{tr('Wybierz grę z listy lub dodaj nową', 'Select a game or add a new one')}</p>
+            <p>{t('games.editForm.emptyRight')}</p>
           </div>
         )}
       </div>

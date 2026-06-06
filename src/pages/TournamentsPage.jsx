@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Trophy, Shuffle, Trash2, X, UserPlus, ChevronRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import * as db from "../data/db";
@@ -6,15 +7,17 @@ import "./TwoColPage.css";
 import "./TournamentsPage.css";
 
 function BracketFlow({ tournament, onScore }) {
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+  const tr2 = (pl, en) => lang === 'en' ? en : pl;
   const containerRef = useRef(null);
   const [drag, setDrag] = useState(null);
   const matches = tournament.matches || [];
   if (matches.length === 0) {
-    const lang2 = document.documentElement.getAttribute('data-lang') || 'pl';
     return (
       <div className="bracket-empty">
         <Trophy size={36} color="var(--border-color)" />
-        <p>{lang2 === 'en' ? 'Click Generate bracket to create matches' : 'Kliknij Generuj drabinkę aby stworzyć mecze'}</p>
+        <p>{tr2('Kliknij Generuj drabinkę aby stworzyć mecze', 'Click Generate bracket to create matches')}</p>
       </div>
     );
   }
@@ -23,8 +26,6 @@ function BracketFlow({ tournament, onScore }) {
   const getRoundLabel = (r) => {
     const pos = rounds.indexOf(r);
     const total = rounds.length;
-    const lang = document.documentElement.getAttribute('data-lang') || 'pl';
-    const tr2 = (pl, en) => lang === 'en' ? en : pl;
     if (pos === total - 1) return tr2('WIELKI FINAŁ', 'GRAND FINAL');
     if (pos === total - 2) return tr2('PÓŁFINAŁY', 'SEMI-FINALS');
     if (pos === total - 3) return tr2('ĆWIERĆFINAŁY', 'QUARTER-FINALS');
@@ -55,7 +56,6 @@ function BracketFlow({ tournament, onScore }) {
                   const matchPlayers = m.players && m.players.length > 0 ? m.players : [m.player1, m.player2];
                   const isTBD = matchPlayers.every(p => p === 'TBD');
                   const isBye = m.isBye;
-                  const lang = document.documentElement.getAttribute('data-lang') || 'pl';
                   return (
                     <div key={m.id} className={"bracket-match" + (m.isCompleted ? " br-done" : "") + (isTBD ? " br-tbd" : "")} onClick={() => !isTBD && !isBye && onScore(m)}>
                       <div className="br-match-id">
@@ -63,7 +63,7 @@ function BracketFlow({ tournament, onScore }) {
                         {m.gameTitle && <span className="br-game-tag">{m.gameTitle}</span>}
                         {m.isCompleted && !isBye && <span className="br-badge br-finished">OK</span>}
                         {isBye && <span className="br-badge" style={{ background: 'var(--panel)', color: 'var(--text2)' }}>BYE</span>}
-                        {!m.isCompleted && !isTBD && !isBye && <span className="br-badge br-pending">{lang === 'en' ? 'pending' : 'czeka'}</span>}
+                        {!m.isCompleted && !isTBD && !isBye && <span className="br-badge br-pending">{tr2('czeka', 'pending')}</span>}
                         {isTBD && <span className="br-badge br-tbd-badge">TBD</span>}
                       </div>
                       {matchPlayers.map((p, idx) => {
@@ -101,7 +101,7 @@ function BracketFlow({ tournament, onScore }) {
           <div className="bracket-champion-col">
             <div className="bracket-champion-box">
               <Trophy size={30} color="var(--color6)" />
-              <p style={{ fontSize: 10, color: "var(--color6)", fontWeight: 700, margin: "4px 0 2px" }}>{document.documentElement.getAttribute('data-lang') === 'en' ? 'CHAMPION' : 'MISTRZ'}</p>
+              <p style={{ fontSize: 10, color: "var(--color6)", fontWeight: 700, margin: "4px 0 2px" }}>{tr2('MISTRZ', 'CHAMPION')}</p>
               <p style={{ fontSize: 14, fontWeight: 800, color: "var(--title1)", margin: 0 }}>{tournament.winner}</p>
             </div>
           </div>
@@ -113,10 +113,11 @@ function BracketFlow({ tournament, onScore }) {
 
 // ── Rotational flow visualisation ────────────────────────────────────────────
 function RotationalFlow({ tournament, onScore }) {
+  const { i18n } = useTranslation();
   const containerRef = useRef(null);
   const [drag, setDrag] = useState(null);
   const rounds = tournament.rounds || [];
-  const lang = document.documentElement.getAttribute('data-lang') || 'pl';
+  const lang = i18n.language;
   const t = (pl, en) => lang === 'en' ? en : pl;
 
   const onMouseDown = e => {
@@ -277,8 +278,9 @@ function RotationalFlow({ tournament, onScore }) {
 }
 
 export default function TournamentsPage() {
-  const { user, addToast, language } = useApp();
-  const tr = (pl, en) => language === "en" ? en : pl;
+  const { user, addToast } = useApp();
+  const { i18n } = useTranslation();
+  const tr = (pl, en) => i18n.language === "en" ? en : pl;
   const [tournaments, setTournaments] = useState([]);
   const [selected, setSelected] = useState(null);
   const [activeTab, setActiveTab] = useState("bracket");
