@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
   Menu, Power, Sun, Moon,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
+import BoardGameBackground from './BoardGameBackground';
 import './Layout.css';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from './LanguageToggle';
@@ -65,6 +67,8 @@ export default function Layout() {
 
   return (
     <div className="app-root">
+      <BoardGameBackground />
+
       <button className="hamburger" onClick={() => setSidebarOpen(o => !o)}>
         <Menu size={20} />
       </button>
@@ -116,7 +120,7 @@ export default function Layout() {
             <p className="user-name">{user?.displayName}</p>
             <p className="user-email">{user?.email}</p>
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Wyloguj">
+          <button className="logout-btn" onClick={handleLogout} title={t('user.logout')}>
             <Power size={16} />
           </button>
         </div>

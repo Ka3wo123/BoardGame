@@ -61,9 +61,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-root">
-      <div className="blob blob1" />
-      <div className="blob blob2" />
-      <div className="blob blob3" />
+      <BoardGameBackground />
 
       <div className='top-right-actions'>
         <LanguageToggle />
@@ -92,9 +90,8 @@ export default function LoginPage() {
                 </h2>
                 <p className="logo-subtitle">{t('login.logoSubtitle')}</p>
               </div>
-            </div>
-
-            <div className="logo-sep" />
+            </>
+          )}
 
             <div className="feature-list">
               <FeatureItem Icon={Layers2} color="var(--color3)" title={t('login.features.catalogTitle')} desc={t('login.features.catalogDesc')} />
@@ -139,6 +136,7 @@ export default function LoginPage() {
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" />
             </div>
 
+          {mode === 'register' && (
             <div className="field-group">
               <label className="form-label">{t('login.card.labelPassword')}</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
@@ -183,20 +181,6 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function FeatureItem({ Icon, color, title, desc }) {
-  return (
-    <div className="feature-item">
-      <div className="feature-icon">
-        <Icon size={18} color={color} />
-      </div>
-      <div>
-        <p className="feature-title">{title}</p>
-        <p className="feature-desc">{desc}</p>
       </div>
     </div>
   );

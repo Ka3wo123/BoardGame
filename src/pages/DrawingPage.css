@@ -370,10 +370,16 @@
   align-items: center;
   justify-content: center;
   gap: 14px;
-  color: var(--text2);
-  font-size: 14px;
+  color: var(--text1);
+  font-size: 15px;
   text-align: center;
   line-height: 1.6;
+}
+
+.drawing-placeholder strong {
+  color: var(--purple);
+  font-size: 17px;
+  letter-spacing: 0.5px;
 }
 
 .drawing-empty {

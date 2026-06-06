@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shuffle, Clock, Users } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import * as db from '../data/db';
 import './DrawingPage.css';
 import { useTranslation } from 'react-i18next';

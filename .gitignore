@@ -1,3 +1,15 @@
 node_modules
 .vs
+
+# production build
+/build
+
+# misc
+.DS_Store
+*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 build/
