@@ -86,11 +86,47 @@ const resources = {
                 ownedGamesLabel: "Posiadane gry (po przecinku)",
                 favoriteGamesLabel: "Ulubione gry (po przecinku)",
                 btnAddPlayer: "Dodaj gracza",
+                btnAdd: "+ Dodaj",
                 playersTitle: "Gracze",
+                myPlayers: "Moi gracze",
                 noPlayers: "Brak graczy.",
+                noPlayersAddFirst: "Dodaj najpierw gracza.",
                 gamesCount: "Gier: {{count}}",
+                gamesShort: "gier",
+                none: "Brak.",
+                ownedGames: "Posiadane gry",
+                favoriteGames: "Ulubione gry",
+                inPlayerList: "Na liście graczy",
                 emptyStateTitle: "Wybierz gracza z listy",
                 emptyStateDesc: "lub dodaj nowego, aby zobaczyć profil",
+                friends: "Znajomi",
+                requests: "Zaproszenia",
+                exchangeOfferGive: "Oferuję",
+                exchangeWantGame: "Szukam",
+                form: {
+                    nicknameLabel: "Nick *",
+                    nicknamePlaceholder: "Np. Gracz123",
+                    fullNamePlaceholder: "Np. Jan Kowalski",
+                    ownedGamesLabel: "Posiadane gry (po przecinku)",
+                    favoriteGamesLabel: "Ulubione gry (po przecinku)"
+                },
+                search: {
+                    placeholder: "Szukaj gracza lub użytkownika...",
+                    noResults: "Brak wyników.",
+                    games: "gier",
+                    profile: "Profil",
+                    addFriend: "Dodaj znajomego",
+                    sent: "Wysłano",
+                    friend: "Znajomy",
+                    awaitingYou: "Czeka na Ciebie",
+                    addAsPlayer: "Dodaj do graczy"
+                },
+                profile: {
+                    communityProfile: "Profil społeczności",
+                    platformUser: "Użytkownik platformy",
+                    yourPlayer: "Twój gracz",
+                    addAsPlayer: "Dodaj jako gracza"
+                },
                 actions: {
                     recommendations: "Rekomendacje",
                     deletePlayer: "Usuń gracza"
@@ -109,10 +145,13 @@ const resources = {
                 exchange: {
                     title: "Wymiana gier",
                     offered: "Oferuję",
+                    offered: "Oferuję",
                     wanted: "Szukam",
                     btnAdd: "+ Dodaj",
                     activeOffers: "Aktywne oferty",
-                    noOffers: "Brak ofert."
+                    noOffers: "Brak ofert.",
+                    offeredPlaceholder: "Tytuł gry",
+                    wantedPlaceholder: "Tytuł gry"
                 },
                 recommendations: {
                     title: "Rekomendacje",
@@ -123,18 +162,58 @@ const resources = {
                     playerAdded: 'Gracz "{{nickname}}" dodany.',
                     playerDeleted: "Gracz usunięty.",
                     offerAdded: "Oferta wymiany dodana."
+                },
+                toasts2: {
+                    requestSent: "Zaproszenie wysłane.",
+                    requestAccepted: "Zaproszenie przyjęte!",
+                    requestDeclined: "Zaproszenie odrzucone.",
+                    addedToPlayers: 'Dodano "{{nickname}}" do graczy.',
+                    nicknameRequired: "Nick jest wymagany.",
+                    playerRemoved: "Gracz usunięty."
                 }
             },
             drawing: {
                 title: "Losowanie gier",
+                headerTitle: "Losowanie planszówek",
+                headerSubtitle: "Wylosuj gry na dzisiejszy wieczór",
                 subtitle: "Wylosuj kolejność gier spośród dostępnych w kolekcji.",
+                configTitle: "Konfiguracja",
                 minPlayersLabel: "Minimalna liczba graczy",
+                minPlayersCfg: "Minimalna liczba graczy",
+                selectionPreference: "Preferencja doboru",
                 btnDraw: "Losuj",
+                btnDrawGames: "Losuj planszówki",
+                btnReroll: "Losuj ponownie",
+                btnConfirm: "Potwierdzam!",
+                resultsTitle: "Wylosowane gry",
+                resultsFound: "gier",
+                sessionTime: "Szacowany czas sesji",
+                hoursShort: "h",
+                boardGame: "Gra planszowa",
+                players: "graczy",
+                placeholderText: "Skonfiguruj kryteria i kliknij",
+                sessionConfirmed: "Sesja potwierdzona! Miłej gry!",
+                emptyForPlayers: "Brak dostępnych gier dla ",
+                emptyPlayersSuffix: "graczy.",
+                emptyHint: "Dodaj gry do kolekcji lub zmień kryteria.",
                 emptyState: "Żadna gra nie spełnia kryteriów (dostępna + min. {{count}} graczy).",
                 totalTime: "Łączny czas: ",
+                weighting: {
+                    random: "Losowo",
+                    preferShort: "Preferuj krótkie",
+                    preferLong: "Preferuj długie",
+                    preferHard: "Preferuj trudne"
+                },
+                complexity: {
+                    easy: "Łatwa",
+                    medium: "Średnia",
+                    hard: "Trudna",
+                    expert: "Ekspercka"
+                },
                 toasts: {
                     noGames: "Brak dostępnych gier dla podanej liczby graczy.",
-                    success: "Wylosowano {{count}} gier."
+                    success: "Wylosowano {{count}} gier.",
+                    confirmed: "Sesja gier zatwierdzona!"
                 }
             },
             tournaments: {
@@ -183,9 +262,54 @@ const resources = {
             },
             games: {
                 title: "Kolekcja gier",
+                libraryTitle: "Biblioteka gier",
+                total: "gier",
                 btnAdd: "Dodaj grę",
                 filterLabel: "Filtruj – min. graczy:",
                 emptyState: "Brak gier w kolekcji.",
+                filters: {
+                    playersLabel: "Gracze",
+                    any: "Dowolna",
+                    players: "graczy",
+                    availabilityLabel: "Dostępność",
+                    all: "Wszystkie",
+                    available: "Dostępna",
+                    inUse: "W użyciu",
+                    service: "Serwis"
+                },
+                editForm: {
+                    titleNew: "Nowa gra",
+                    titleEdit: "Edytuj grę",
+                    subtitle: "Uzupełnij dane gry",
+                    gameTitle: "Tytuł *",
+                    gameTitlePlaceholder: "Np. Catan, Wingspan...",
+                    description: "Opis",
+                    descriptionPlaceholder: "Krótki opis gry...",
+                    minPlayers: "Min. graczy",
+                    maxPlayers: "Max. graczy",
+                    playTime: "Czas (min)",
+                    difficulty: "Trudność",
+                    cover: "Kolor okładki",
+                    statusLabel: "Status",
+                    save: "Zapisz",
+                    cancel: "Anuluj",
+                    removeFromCatalog: "Usuń z katalogu",
+                    emptyRight: "Kliknij grę, aby edytować"
+                },
+                complexity: {
+                    easy: "Łatwa",
+                    medium: "Średnia",
+                    hard: "Trudna",
+                    expert: "Ekspercka"
+                },
+                status: {
+                    available: "Dostępna",
+                    inUse: "W użyciu",
+                    service: "Serwis",
+                    descAvailable: "Gra gotowa do użycia",
+                    descInUse: "Aktualnie wypożyczona",
+                    descService: "W naprawie / niedostępna"
+                },
                 form: {
                     titleNew: "Nowa gra",
                     titleEdit: "Edytuj grę",
@@ -210,12 +334,16 @@ const resources = {
                     requiredTitle: "Tytuł jest wymagany.",
                     updated: 'Zaktualizowano "{{title}}".',
                     added: 'Dodano "{{title}}".',
-                    deleted: 'Usunięto "{{title}}".'
+                    deleted: 'Usunięto "{{title}}".',
+                    archived: 'Usunięto "{{title}}" z katalogu.'
                 }
             },
             login: {
                 themeLight: "Tryb jasny",
                 themeDark: "Tryb ciemny",
+                themeLightTitle: "Włącz tryb jasny",
+                themeDarkTitle: "Włącz tryb ciemny",
+                changeLanguage: "Zmień język",
                 logoSubtitle: "Twoja platforma gier planszowych",
                 features: {
                     catalogTitle: "Katalog Gier",
@@ -235,14 +363,19 @@ const resources = {
                     subtitleRegister: "Utwórz nowe konto",
                     tabLogin: "Logowanie",
                     tabRegister: "Rejestracja",
-                    labelDisplayName: "Wyświetlana nazwa",
+                    labelDisplayName: "Wyświetlana nazwa (nick) *",
+                    placeholderDisplayName: "Twój nick",
+                    labelFullName: "Imię i nazwisko",
+                    placeholderFullName: "np. Jan Kowalski",
                     labelEmail: "Adres e-mail",
                     labelPassword: "Hasło",
                     labelConfirmPassword: "Potwierdź hasło",
                     btnLogin: "Zaloguj się",
                     btnRegister: "Utwórz konto",
                     loadingLogin: "Logowanie...",
-                    loadingRegister: "Tworzenie..."
+                    loadingRegister: "Tworzenie...",
+                    demo: "Demo:",
+                    registerHint: "Rejestracja tworzy nowe konto lokalnie."
                 },
                 errors: {
                     requiredPassword: "Podaj hasło!",
@@ -343,11 +476,47 @@ const resources = {
                 ownedGamesLabel: "Owned games (comma separated)",
                 favoriteGamesLabel: "Favorite games (comma separated)",
                 btnAddPlayer: "Add Player",
+                btnAdd: "+ Add",
                 playersTitle: "Players",
+                myPlayers: "My Players",
                 noPlayers: "No players.",
+                noPlayersAddFirst: "Add a player first.",
                 gamesCount: "Games: {{count}}",
+                gamesShort: "games",
+                none: "None.",
+                ownedGames: "Owned games",
+                favoriteGames: "Favorite games",
+                inPlayerList: "In player list",
                 emptyStateTitle: "Select a player from the list",
                 emptyStateDesc: "or add a new one to see profile",
+                friends: "Friends",
+                requests: "Requests",
+                exchangeOfferGive: "Offering",
+                exchangeWantGame: "Looking for",
+                form: {
+                    nicknameLabel: "Nickname *",
+                    nicknamePlaceholder: "E.g. Player123",
+                    fullNamePlaceholder: "E.g. John Smith",
+                    ownedGamesLabel: "Owned games (comma separated)",
+                    favoriteGamesLabel: "Favorite games (comma separated)"
+                },
+                search: {
+                    placeholder: "Search player or user...",
+                    noResults: "No results.",
+                    games: "games",
+                    profile: "Profile",
+                    addFriend: "Add friend",
+                    sent: "Sent",
+                    friend: "Friend",
+                    awaitingYou: "Awaiting you",
+                    addAsPlayer: "Add to players"
+                },
+                profile: {
+                    communityProfile: "Community profile",
+                    platformUser: "Platform user",
+                    yourPlayer: "Your player",
+                    addAsPlayer: "Add as player"
+                },
                 actions: {
                     recommendations: "Recommendations",
                     deletePlayer: "Delete Player"
@@ -365,11 +534,13 @@ const resources = {
                 },
                 exchange: {
                     title: "Game Exchange",
-                    offered: "Offered",
-                    wanted: "Wanted",
+                    offered: "Offering",
+                    wanted: "Looking for",
                     btnAdd: "+ Add",
                     activeOffers: "Active Offers",
-                    noOffers: "No offers."
+                    noOffers: "No offers.",
+                    offeredPlaceholder: "Game title",
+                    wantedPlaceholder: "Game title"
                 },
                 recommendations: {
                     title: "Recommendations",
@@ -380,18 +551,58 @@ const resources = {
                     playerAdded: 'Player "{{nickname}}" added.',
                     playerDeleted: "Player deleted.",
                     offerAdded: "Exchange offer added."
+                },
+                toasts2: {
+                    requestSent: "Friend request sent.",
+                    requestAccepted: "Friend request accepted!",
+                    requestDeclined: "Friend request declined.",
+                    addedToPlayers: 'Added "{{nickname}}" to players.',
+                    nicknameRequired: "Nickname is required.",
+                    playerRemoved: "Player removed."
                 }
             },
             drawing: {
                 title: "Game Draw",
+                headerTitle: "Board Game Draw",
+                headerSubtitle: "Draw games for tonight",
                 subtitle: "Draw the order of games from those available in the collection.",
+                configTitle: "Configuration",
                 minPlayersLabel: "Minimum number of players",
+                minPlayersCfg: "Minimum number of players",
+                selectionPreference: "Selection preference",
                 btnDraw: "Draw",
+                btnDrawGames: "Draw games",
+                btnReroll: "Re-roll",
+                btnConfirm: "Confirm!",
+                resultsTitle: "Drawn games",
+                resultsFound: "games",
+                sessionTime: "Estimated session time",
+                hoursShort: "h",
+                boardGame: "Board game",
+                players: "players",
+                placeholderText: "Configure criteria and click",
+                sessionConfirmed: "Session confirmed! Have fun!",
+                emptyForPlayers: "No available games for ",
+                emptyPlayersSuffix: "players.",
+                emptyHint: "Add games to the collection or change criteria.",
                 emptyState: "No game meets the criteria (available + min. {{count}} players).",
                 totalTime: "Total time: ",
+                weighting: {
+                    random: "Random",
+                    preferShort: "Prefer short",
+                    preferLong: "Prefer long",
+                    preferHard: "Prefer hard"
+                },
+                complexity: {
+                    easy: "Easy",
+                    medium: "Medium",
+                    hard: "Hard",
+                    expert: "Expert"
+                },
                 toasts: {
                     noGames: "No available games for the specified number of players.",
-                    success: "Successfully drawn {{count}} games."
+                    success: "Successfully drawn {{count}} games.",
+                    confirmed: "Game session confirmed!"
                 }
             },
             tournaments: {
@@ -440,9 +651,54 @@ const resources = {
             },
             games: {
                 title: "Game Collection",
+                libraryTitle: "Game Library",
+                total: "games",
                 btnAdd: "Add game",
                 filterLabel: "Filter – min. players:",
                 emptyState: "No games in the collection.",
+                filters: {
+                    playersLabel: "Players",
+                    any: "Any",
+                    players: "players",
+                    availabilityLabel: "Availability",
+                    all: "All",
+                    available: "Available",
+                    inUse: "In Use",
+                    service: "Maintenance"
+                },
+                editForm: {
+                    titleNew: "New Game",
+                    titleEdit: "Edit Game",
+                    subtitle: "Fill in the game details",
+                    gameTitle: "Title *",
+                    gameTitlePlaceholder: "E.g. Catan, Wingspan...",
+                    description: "Description",
+                    descriptionPlaceholder: "Short game description...",
+                    minPlayers: "Min. players",
+                    maxPlayers: "Max. players",
+                    playTime: "Play time (min)",
+                    difficulty: "Difficulty",
+                    cover: "Cover color",
+                    statusLabel: "Status",
+                    save: "Save",
+                    cancel: "Cancel",
+                    removeFromCatalog: "Remove from catalog",
+                    emptyRight: "Click a game to edit"
+                },
+                complexity: {
+                    easy: "Easy",
+                    medium: "Medium",
+                    hard: "Hard",
+                    expert: "Expert"
+                },
+                status: {
+                    available: "Available",
+                    inUse: "In Use",
+                    service: "Maintenance",
+                    descAvailable: "Game ready to use",
+                    descInUse: "Currently borrowed",
+                    descService: "Under repair / unavailable"
+                },
                 form: {
                     titleNew: "New Game",
                     titleEdit: "Edit Game",
@@ -467,12 +723,16 @@ const resources = {
                     requiredTitle: "Title is required.",
                     updated: 'Updated "{{title}}".',
                     added: 'Added "{{title}}".',
-                    deleted: 'Deleted "{{title}}".'
+                    deleted: 'Deleted "{{title}}".',
+                    archived: 'Removed "{{title}}" from catalog.'
                 }
             },
             login: {
                 themeLight: "Light mode",
                 themeDark: "Dark mode",
+                themeLightTitle: "Switch to light mode",
+                themeDarkTitle: "Switch to dark mode",
+                changeLanguage: "Change language",
                 logoSubtitle: "Your board games platform",
                 features: {
                     catalogTitle: "Game Catalog",
@@ -492,14 +752,19 @@ const resources = {
                     subtitleRegister: "Create a new account",
                     tabLogin: "Login",
                     tabRegister: "Register",
-                    labelDisplayName: "Display name",
+                    labelDisplayName: "Display name (nick) *",
+                    placeholderDisplayName: "Your nick",
+                    labelFullName: "Full name",
+                    placeholderFullName: "e.g. John Smith",
                     labelEmail: "E-mail address",
                     labelPassword: "Password",
                     labelConfirmPassword: "Confirm password",
                     btnLogin: "Log In",
                     btnRegister: "Create Account",
                     loadingLogin: "Logging in...",
-                    loadingRegister: "Creating..."
+                    loadingRegister: "Creating...",
+                    demo: "Demo:",
+                    registerHint: "Registration creates a new local account."
                 },
                 errors: {
                     requiredPassword: "Password is required!",

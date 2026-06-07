@@ -182,11 +182,13 @@
   border-color: var(--purple);
 }
 
-.top-right-actions {
-  position: absolute;
-  top: 16px;
-  right: 24px;
-  display: flex;
-  gap: 8px;
-  z-index: 99;
+@media (max-width: 600px) {
+  .login-root { padding: 96px 16px 40px; }
+  .login-card { padding: 30px 22px; }
+  .login-logo { top: 16px; left: 16px; gap: 10px; }
+  .logo-icon { width: 42px; height: 42px; border-radius: 12px; }
+  .logo-title { font-size: 18px; }
+  .logo-subtitle { font-size: 11px; }
+  .login-card-title { font-size: 26px; }
+  .login-theme-btn span { display: none; }
 }
