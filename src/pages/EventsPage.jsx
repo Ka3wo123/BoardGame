@@ -32,6 +32,21 @@ export default function EventsPage() {
   const [formPlayers, setFormPlayers] = useState([]);
   const [formManualPlayer, setFormManualPlayer] = useState('');
 
+  const statusLabel = {
+    Planned: t('events.status.Planned'),
+    Confirmed: t('events.status.Confirmed'),
+    InProgress: t('events.status.InProgress'),
+    Completed: t('events.status.Completed'),
+    Cancelled: t('events.status.Cancelled')
+  };
+
+  const attendeeLabel = {
+    Pending: t('events.attendeeStatus.Pending'),
+    Confirmed: t('events.attendeeStatus.Confirmed'),
+    Declined: t('events.attendeeStatus.Declined'),
+    Maybe: t('events.attendeeStatus.Maybe')
+  };
+
   const load = useCallback(async () => {
     const all = await db.getEventsAsync(user.id);
     setEvents(all);

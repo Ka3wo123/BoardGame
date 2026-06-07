@@ -305,15 +305,8 @@
   cursor: pointer;
 }
 
-.item-card:hover {
-  background: var(--panel-hover);
-  border-color: var(--purple-light);
-}
-
-.item-card.active {
-  border-color: var(--purple);
-  background: var(--panel-active);
-}
+.item-card:hover { background: var(--panel-hover); border-color: var(--purple-light); }
+.item-card.active { border-color: var(--purple); background: var(--panel-active); }
 
 .item-title {
   font-size: 0.95rem;
@@ -360,21 +353,9 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.btn-icon:hover {
-  background: var(--panel-hover);
-  color: var(--title1);
-}
-
-.btn-icon.btn-danger {
-  border-color: var(--red);
-  color: var(--color14);
-  background: transparent;
-}
-
-.btn-icon.btn-danger:hover {
-  background: var(--red);
-  color: white;
-}
+.btn-icon:hover { background: var(--panel-hover); color: var(--title1); }
+.btn-icon.btn-danger { border-color: var(--red); color: var(--color14); background: transparent; }
+.btn-icon.btn-danger:hover { background: var(--red); color: white; }
 
 .btn-ghost {
   background: transparent;
@@ -385,10 +366,7 @@
   align-items: center;
   border-radius: 4px;
 }
-
-.btn-ghost:hover {
-  color: var(--title1);
-}
+.btn-ghost:hover { color: var(--title1); }
 
 .games-filter {
   display: flex;
@@ -422,12 +400,6 @@
 .item-meta {
   font-size: 0.8rem;
   color: var(--text2);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1px;
-  flex-wrap: wrap;
-
 }
 
 .form-row {
@@ -450,11 +422,4 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-}
-
-.add-game {
-  display: flex;  
-  justify-content: baseline;
-  gap: 6px;
-  flex-wrap: wrap;
 }

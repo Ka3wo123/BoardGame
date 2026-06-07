@@ -4,10 +4,11 @@ import { useApp } from '../context/AppContext';
 import { useTranslation } from 'react-i18next';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
-  Menu, Power, Sun, Moon, Globe,
+  Menu, Power, Sun, Moon,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
 import BoardGameBackground from './BoardGameBackground';
+import LanguageToggle from './LanguageToggle';
 import './Layout.css';
 
 
@@ -53,6 +54,14 @@ export default function Layout() {
     : '?';
 
   const close = () => setSidebarOpen(false);
+
+  const navItems = [
+    { path: '/tournaments', icon: Trophy, label: t('nav.tournaments') },
+    { path: '/events', icon: CalendarDays, label: t('nav.events') },
+    { path: '/games', icon: Gamepad2, label: t('nav.games') },
+    { path: '/drawing', icon: Shuffle, label: t('nav.drawing') },
+    { path: '/community', icon: Users, label: t('nav.community') },
+  ];
 
   return (
     <div className="app-root">
