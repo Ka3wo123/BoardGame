@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import { loginAsync, registerAsync } from '../data/db';
 import {
   Dice5, Shuffle, Trophy,
@@ -11,6 +12,7 @@ import './LoginPage.css';
 
 export default function LoginPage() {
   const { login, theme, toggleTheme } = useApp();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState('login');
@@ -87,8 +89,7 @@ export default function LoginPage() {
                 </h2>
                 <p className="logo-subtitle">{t('login.logoSubtitle')}</p>
               </div>
-            </>
-          )}
+            </div>
 
             <div className="feature-list">
               <FeatureItem Icon={Layers2} color="var(--color3)" title={t('login.features.catalogTitle')} desc={t('login.features.catalogDesc')} />
@@ -133,7 +134,6 @@ export default function LoginPage() {
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" />
             </div>
 
-          {mode === 'register' && (
             <div className="field-group">
               <label className="form-label">{t('login.card.labelPassword')}</label>
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />

@@ -189,6 +189,8 @@
   display: flex;
   gap: 8px;
   z-index: 99;
+}
+
 @media (max-width: 600px) {
   .login-root { padding: 96px 16px 40px; }
   .login-card { padding: 30px 22px; }
@@ -198,5 +200,4 @@
   .logo-subtitle { font-size: 11px; }
   .login-card-title { font-size: 26px; }
   .login-theme-btn span { display: none; }
->>>>>>>>> Temporary merge branch 2
 }

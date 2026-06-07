@@ -7,20 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 export default function TournamentsPage() {
   const { user, addToast } = useApp();
-  const { t } = useTranslation();
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default function TournamentsPage() {
-  const { user, addToast } = useApp();
   const { i18n } = useTranslation();
   const tr = (pl, en) => i18n.language === "en" ? en : pl;
->>>>>>>>> Temporary merge branch 2
   const [tournaments, setTournaments] = useState([]);
   const [selected, setSelected] = useState(null);
   const [activeTab, setActiveTab] = useState("bracket");

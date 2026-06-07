@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext';
 import { useTranslation } from 'react-i18next';
 import * as db from '../data/db';
 import './DrawingPage.css';
-import { useTranslation } from 'react-i18next';
 
 export default function DrawingPage() {
   const { addToast } = useApp();

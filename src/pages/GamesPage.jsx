@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Pencil, Check, X, Users, Timer, Dot } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import * as db from '../data/db';
 import './TwoColPage.css';
 import './GamesPage.css';
