@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { CalendarDays, CheckCheck, XOctagon, Trash2, UserPlus, Search, X } from 'lucide-react';
+import { CalendarDays, CheckCheck, XOctagon, Trash2, UserPlus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import * as db from '../data/db';
 import './TwoColPage.css';
@@ -82,15 +81,7 @@ export default function EventsPage() {
   };
 
   const create = async () => {
-    if (!evtName.trim()) { addToast(t('events.toasts.nameRequired'), 'error'); return; }
-    const eventDate = date || new Date().toISOString().slice(0, 10);
-    const evt = await db.createEventAsync(user.id, evtName, desc, location, eventDate, startTime, endTime, plannedGames);
-    // Auto-add creator as first attendee
-    await db.addAttendeeAsync(evt.id, user.displayName, user.id);
-    // Add pre-selected players
-    for (const p of formPlayers) {
-      await db.addAttendeeAsync(evt.id, p.name, p.linkedUserId || null);
-    }
+    const evt = await db.createEventAsync(user.id, evtName, desc, location, date, startTime, endTime, plannedGames);
     addToast(t('events.toasts.created', { name: evt.name }), 'success');
     setEvtName(''); setDesc(''); setLocation(''); setPlannedGames('');
     setDate(''); setStartTime(''); setEndTime('');
@@ -104,8 +95,6 @@ export default function EventsPage() {
     if (!n) return;
     await db.addAttendeeAsync(selected.id, n, linkedUserId || null);
     setAttendeeName('');
-    setAttendeeSearch('');
-    setAttendeeSearchResults([]);
     addToast(t('events.toasts.attendeeAdded'), 'success');
     load();
   };
@@ -113,8 +102,7 @@ export default function EventsPage() {
   const updateStatus = async (s) => {
     if (!selected) return;
     await db.updateEventStatusAsync(selected.id, s);
-    const lbl = t(`events.status.${s}`);
-    addToast(t('events.toasts.statusChanged', { status: lbl }), 'info');
+    addToast(t('events.toasts.statusChanged', { status: statusLabel[s] }), 'info');
     load();
   };
 
@@ -147,7 +135,7 @@ export default function EventsPage() {
       </p>
       <p style={{ color: 'var(--text2)', fontSize: 11 }}>
         {t('events.details.attendeesCount')}: {evt.attendees?.length || 0} •{' '}
-        <span className={`badge ${statusBadge[evt.status] || ''}`}>{t(`events.status.${evt.status}`)}</span>
+        <span className={`badge ${statusBadge[evt.status] || ''}`}>{statusLabel[evt.status] || evt.status}</span>
       </p>
     </div>
   );
@@ -166,14 +154,14 @@ export default function EventsPage() {
           <div className="card">
             <p className="section-title">{t('events.newEvent')}</p>
 
-            <label className="form-label">{t('events.form.name')} *</label>
-            <input value={evtName} onChange={e => setEvtName(e.target.value)} placeholder={t('events.form.namePlaceholder')} />
+            <label className="form-label">{t('events.form.name')}</label>
+            <input value={evtName} onChange={e => setEvtName(e.target.value)} />
 
             <label className="form-label">{t('events.form.desc')}</label>
-            <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} placeholder={t('events.form.descPlaceholder')} />
+            <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} />
 
             <label className="form-label">{t('events.form.location')}</label>
-            <input value={location} onChange={e => setLocation(e.target.value)} placeholder={t('events.form.locationPlaceholder')} />
+            <input value={location} onChange={e => setLocation(e.target.value)} />
 
             <label className="form-label">{t('events.form.date')}</label>
             <input
@@ -204,50 +192,8 @@ export default function EventsPage() {
               </div>
             </div>
 
-            <label className="form-label">{t('events.form.plannedGamesLabel')}</label>
-            <input value={plannedGames} onChange={e => setPlannedGames(e.target.value)} placeholder={t('events.form.plannedGamesPlaceholder')} />
-
-            {/* Invite players */}
-            <label className="form-label" style={{ marginTop: 10 }}>{t('events.form.invitePlayers')} ({t('events.form.optional')})</label>
-            <div style={{ position: 'relative', marginBottom: 6 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid var(--border-color)', borderRadius: 8, padding: '6px 10px', background: 'var(--input-bg)' }}>
-                <Search size={13} color="var(--text2)" />
-                <input
-                  value={formPlayerSearch}
-                  onChange={e => setFormPlayerSearch(e.target.value)}
-                  placeholder={t('events.form.searchCommunity')}
-                  style={{ border: 'none', background: 'transparent', outline: 'none', flex: 1, fontSize: 12, padding: 0 }}
-                />
-                {formPlayerSearch && <X size={12} style={{ cursor: 'pointer' }} onClick={() => { setFormPlayerSearch(''); setFormPlayerSearchResults([]); }} />}
-              </div>
-              {formPlayerSearchResults.length > 0 && (
-                <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--panel-color)', border: '1px solid var(--border-color)', borderRadius: 8, zIndex: 20, maxHeight: 130, overflowY: 'auto' }}>
-                  {formPlayerSearchResults.map(p => (
-                    <div key={p.id} onClick={() => addFormPlayer(p)} style={{ padding: '6px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span><strong>{p.nickname}</strong>{p.fullName && p.fullName !== p.nickname && <span style={{ color: 'var(--text2)', fontSize: 10 }}> ({p.fullName})</span>}</span>
-                      <UserPlus size={12} color="var(--purple)" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-              <input value={formManualPlayer} onChange={e => setFormManualPlayer(e.target.value)} placeholder={t('events.form.orManual')} style={{ flex: 1 }} onKeyDown={e => e.key === 'Enter' && addFormManualPlayer()} />
-              <button className="btn-secondary" style={{ padding: '6px 10px' }} onClick={addFormManualPlayer}>+</button>
-            </div>
-            {formPlayers.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
-                <span style={{ fontSize: 10, color: 'var(--color3)', alignSelf: 'center' }}>👤 {user.displayName} ({t('events.form.you')})</span>
-                {formPlayers.map((p, i) => (
-                  <span key={i} style={{ fontSize: 11, background: 'var(--panel-active)', color: 'var(--title1)', borderRadius: 10, padding: '2px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {p.name} <X size={9} style={{ cursor: 'pointer' }} onClick={() => setFormPlayers(prev => prev.filter((_, j) => j !== i))} />
-                  </span>
-                ))}
-              </div>
-            )}
-            {formPlayers.length === 0 && (
-              <p style={{ fontSize: 11, color: 'var(--text2)', marginBottom: 6 }}>👤 <strong>{user.displayName}</strong> {t('events.form.autoAdded')}</p>
-            )}
+            <label className="form-label">{t('events.form.plannedGames')}</label>
+            <input value={plannedGames} onChange={e => setPlannedGames(e.target.value)} />
 
             <button
               className="btn-primary"
@@ -276,28 +222,6 @@ export default function EventsPage() {
         <div className="tcpage-right">
           {selected ? (
             <>
-              {/* Event detail card */}
-              <div className="card" style={{ marginBottom: 10 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-                  <div style={{ flex: 1 }}>
-                    <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 4px', color: 'var(--title1)' }}>{selected.name}</h2>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, fontSize: 12, color: 'var(--text2)', marginBottom: 6 }}>
-                      {selected.eventDate && <span>📅 {new Date(selected.eventDate).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'pl-PL')}</span>}
-                      {(selected.startTime || selected.endTime) && <span>🕐 {selected.startTime}{selected.endTime ? ' – ' + selected.endTime : ''}</span>}
-                      {selected.location && <span>📍 {selected.location}</span>}
-                    </div>
-                    {selected.description && <p style={{ fontSize: 12, color: 'var(--text1)', margin: '0 0 6px' }}>{selected.description}</p>}
-                    {selected.plannedGames && (
-                      <p style={{ fontSize: 11, color: 'var(--text2)', margin: 0 }}>
-                        🎲 {t('events.details.games')}: <span style={{ color: 'var(--color6)' }}>{selected.plannedGames}</span>
-                      </p>
-                    )}
-                  </div>
-                  <span className={`badge ${statusBadge[selected.status] || ''}`}>
-                    {t(`events.status.${selected.status}`)}
-                  </span>
-                </div>
-              </div>
               <div className="action-row">
                 <button className="btn-secondary" onClick={() => updateStatus('Completed')}>
                   <CheckCheck size={14} style={{ marginRight: 6 }} />{t('events.details.btnComplete')}
@@ -313,45 +237,15 @@ export default function EventsPage() {
               {/* Add attendee */}
               <div className="card">
                 <p className="section-title">{t('events.details.addAttendee')}</p>
-                {/* Search from community */}
-                <div style={{ position:'relative', marginBottom:6 }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, border:'1px solid var(--border-color)', borderRadius:6, padding:'6px 10px', background:'var(--card-inner,var(--card-bg))' }}>
-                    <Search size={13} color="var(--text2)" />
-                    <input
-                      value={attendeeSearch}
-                      onChange={e => setAttendeeSearch(e.target.value)}
-                      placeholder={t('events.details.searchPlayer')}
-                      style={{ border:'none', background:'transparent', outline:'none', flex:1, fontSize:12, color:'var(--title1)' }}
-                    />
-                    {attendeeSearch && <X size={12} style={{cursor:'pointer'}} onClick={() => { setAttendeeSearch(''); setAttendeeSearchResults([]); }} />}
-                  </div>
-                  {attendeeSearchResults.length > 0 && (
-                    <div style={{ position:'absolute', top:'100%', left:0, right:0, background:'var(--panel-color)', border:'1px solid var(--border-color)', borderRadius:6, zIndex:20, maxHeight:150, overflowY:'auto' }}>
-                      {attendeeSearchResults.map(p => (
-                        <div key={p.id}
-                          onClick={() => addAttendee(p.nickname, p.isUser ? p.creatorId : null)}
-                          style={{ padding:'7px 12px', cursor:'pointer', fontSize:12, borderBottom:'1px solid var(--border-color)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                          <div>
-                            <strong>{p.nickname}</strong>
-                            {p.fullName && p.fullName !== p.nickname && <span style={{ color:'var(--text2)', fontSize:10 }}> ({p.fullName})</span>}
-                            {p.ownedGames?.length > 0 && <span style={{ color:'var(--purple)', fontSize:10 }}> 🎲{p.ownedGames.length} {t('events.details.gamesShort')}</span>}
-                          </div>
-                          <UserPlus size={12} color="var(--purple)" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {/* Manual input */}
                 <div style={{ display: 'flex', gap: 10 }}>
                   <input
                     value={attendeeName}
                     onChange={e => setAttendeeName(e.target.value)}
-                    placeholder={t('events.details.orManualName')}
+                    placeholder={t('events.details.attendeePlaceholder')}
                     style={{ flex: 1 }}
                     onKeyDown={e => e.key === 'Enter' && addAttendee()}
                   />
-                  <button className="btn-primary" onClick={() => addAttendee()} disabled={!attendeeName}>
+                  <button className="btn-primary" onClick={addAttendee} disabled={!attendeeName}>
                     <UserPlus size={14} style={{ marginRight: 6 }} />{t('events.details.btnAdd')}
                   </button>
                 </div>
@@ -368,7 +262,7 @@ export default function EventsPage() {
                     <div style={{ flex: 1 }}>
                       <p style={{ fontSize: 13, fontWeight:600, margin:'0 0 2px' }}>{a.name}</p>
                       <span className={`badge ${attendeeBadge[a.status] || ''}`}>
-                        {t(`events.attendeeStatus.${a.status}`)}
+                        {attendeeLabel[a.status] || a.status}
                       </span>
                       {a.ownedGames?.length > 0 && (
                         <div style={{ marginTop:4, display:'flex', flexWrap:'wrap', gap:3 }}>
