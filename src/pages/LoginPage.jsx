@@ -11,6 +11,13 @@ import './LoginPage.css';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
 import i18n from '../i18n';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile
+} from "firebase/auth";
+
+import { auth } from "../firebase";
 
 export default function LoginPage() {
   const { login, theme, toggleTheme } = useApp();
@@ -30,33 +37,78 @@ export default function LoginPage() {
   const switchMode = (m) => { setMode(m); clearMessages(); };
 
   const handleLogin = async () => {
-    if (!password) { setError(t('login.errors.requiredPassword')); return; }
-    setLoading(true); clearMessages();
+    if (!password) {
+      setError(t('login.errors.requiredPassword'));
+      return;
+    }
+
+    setLoading(true);
+    clearMessages();
+
     try {
-      const user = await loginAsync(email, password);
-      if (!user) { setError(t('login.errors.invalidCredentials')); return; }
-      login(user);
+      const result = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      login({
+        id: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName
+      });
+
       navigate('/tournaments');
-    } catch (ex) {
-      setError(t('login.errors.connectionError', { message: ex.message }));
-    } finally { setLoading(false); }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegister = async () => {
-    if (!password) { setError(t('login.errors.requiredPassword')); return; }
-    if (password.length < 6) { setError(t('login.errors.passwordLength')); return; }
-    if (password !== confirmPassword) { setError(t('login.errors.passwordsNotMatch')); return; }
-    setLoading(true); clearMessages();
+    if (!password) {
+      setError(t('login.errors.requiredPassword'));
+      return;
+    }
+
+    if (password.length < 6) {
+      setError(t('login.errors.passwordLength'));
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError(t('login.errors.passwordsNotMatch'));
+      return;
+    }
+
+    setLoading(true);
+    clearMessages();
+
     try {
-      const { user, error: err } = await registerAsync(email, password, displayName);
-      if (err) { setError(err); return; }
-      setSuccess(t('login.messages.accountCreated', { name: user.displayName }));
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      await updateProfile(result.user, {
+        displayName
+      });
+
+      setSuccess(
+        t('login.messages.accountCreated', {
+          name: displayName
+        })
+      );
+
       switchMode('login');
-      setEmail(user.email);
-      setDisplayName(''); setPassword(''); setConfirmPassword('');
-    } catch (ex) {
-      setError(t('login.errors.genericError', { message: ex.message }));
-    } finally { setLoading(false); }
+
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
