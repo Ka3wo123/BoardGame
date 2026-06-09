@@ -32,8 +32,6 @@ export const initContentsquare = () => {
 
   const script = document.createElement("script");
 
-  script.type = "text/javascript";
-  script.async = true;
 
   script.src = `https://t.contentsquare.net/uxa/${csId}.js`;
 
