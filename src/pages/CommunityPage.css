@@ -11,3 +11,51 @@
   color: white;
   flex-shrink: 0;
 }
+
+/* Global search bar */
+.community-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-top: 8px;
+}
+
+.community-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--title1);
+  font-size: 16px;
+  padding: 0;
+}
+
+.community-search-results {
+  background: var(--panel-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-top: 6px;
+  overflow: hidden;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.community-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.12s;
+}
+.community-search-result-item:last-child { border-bottom: none; }
+.community-search-result-item:hover { background: var(--panel-hover); }
+.community-search-result-item.active { background: var(--panel-active); border-left: 3px solid var(--purple); }
+

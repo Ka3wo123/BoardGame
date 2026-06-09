@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import i18n from 'i18next';
 
 const AppContext = createContext(null);
 
@@ -14,6 +15,11 @@ export function AppProvider({ children }) {
 
   const toggleTheme = useCallback(() => {
     setTheme(t => t === 'dark' ? 'light' : 'dark');
+  }, []);
+
+  const toggleLanguage = useCallback(() => {
+    const next = i18n.language === 'pl' ? 'en' : 'pl';
+    i18n.changeLanguage(next);
   }, []);
 
   const login = (userData) => setUser(userData);
@@ -32,7 +38,7 @@ export function AppProvider({ children }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme }}>
+    <AppContext.Provider value={{ user, login, logout, addToast, toasts, removeToast, theme, toggleTheme, toggleLanguage }}>
       {children}
     </AppContext.Provider>
   );

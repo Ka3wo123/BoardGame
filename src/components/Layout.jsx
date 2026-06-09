@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import {
   Trophy, CalendarDays, Users, Dice5, Gamepad2, Shuffle,
   Menu, Power, Sun, Moon,
   CheckCircle2, XCircle, AlertTriangle, Info, X
 } from 'lucide-react';
-import './Layout.css';
-import { useTranslation } from 'react-i18next';
+import BoardGameBackground from './BoardGameBackground';
 import LanguageToggle from './LanguageToggle';
+import './Layout.css';
 
 
 const TOAST_META = {
   success: { icon: CheckCircle2, color: '#4CAF50' },
-  error: { icon: XCircle, color: 'var(--color14)' },
+  error:   { icon: XCircle,      color: 'var(--color14)' },
   warning: { icon: AlertTriangle, color: 'var(--color6)' },
-  info: { icon: Info, color: 'var(--purple)' },
+  info:    { icon: Info,          color: 'var(--purple)' },
 };
 
 function ToastContainer() {
@@ -52,19 +53,20 @@ export default function Layout() {
     ? user.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '?';
 
-  const navItems = [
-    { path: '/games', icon: Gamepad2, label: t('nav.games') },
-    { path: '/drawing', icon: Shuffle, label: t('nav.drawing') },
-    { path: '/tournaments', icon: Trophy, label: t('nav.tournaments') },
-    { path: '/events', icon: CalendarDays, label: t('nav.events') },
-    { path: '/community', icon: Users, label: t('nav.community') },
-  ];
   const close = () => setSidebarOpen(false);
 
-  const currentLanguage = i18n.language;
+  const navItems = [
+    { path: '/tournaments', icon: Trophy, label: t('nav.tournaments') },
+    { path: '/events', icon: CalendarDays, label: t('nav.events') },
+    { path: '/games', icon: Gamepad2, label: t('nav.games') },
+    { path: '/drawing', icon: Shuffle, label: t('nav.drawing') },
+    { path: '/community', icon: Users, label: t('nav.community') },
+  ];
 
   return (
     <div className="app-root">
+      <BoardGameBackground />
+
       <button className="hamburger" onClick={() => setSidebarOpen(o => !o)}>
         <Menu size={20} />
       </button>
@@ -116,7 +118,7 @@ export default function Layout() {
             <p className="user-name">{user?.displayName}</p>
             <p className="user-email">{user?.email}</p>
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Wyloguj">
+          <button className="logout-btn" onClick={handleLogout} title={t('user.logout')}>
             <Power size={16} />
           </button>
         </div>

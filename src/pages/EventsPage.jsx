@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CalendarDays, CheckCheck, XOctagon, Trash2, UserPlus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
 import * as db from '../data/db';
 import './TwoColPage.css';
-import { useTranslation } from 'react-i18next';
 
 const statusBadge = { Planned: 'badge-planned', Confirmed: 'badge-confirmed', InProgress: 'badge-inprogress', Completed: 'badge-completed', Cancelled: 'badge-cancelled' };
 const attendeeBadge = { Pending: 'badge-pending', Confirmed: 'badge-confirmed', Declined: 'badge-declined', Maybe: 'badge-pending' };
@@ -14,7 +14,10 @@ export default function EventsPage() {
   const [events, setEvents] = useState([]);
   const [selected, setSelected] = useState(null);
   const [attendeeName, setAttendeeName] = useState('');
+  const [attendeeSearch, setAttendeeSearch] = useState('');
+  const [attendeeSearchResults, setAttendeeSearchResults] = useState([]);
 
+  // Form
   const [evtName, setEvtName] = useState('');
   const [desc, setDesc] = useState('');
   const [location, setLocation] = useState('');
@@ -22,6 +25,12 @@ export default function EventsPage() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [plannedGames, setPlannedGames] = useState('');
+
+  // Players added during creation
+  const [formPlayerSearch, setFormPlayerSearch] = useState('');
+  const [formPlayerSearchResults, setFormPlayerSearchResults] = useState([]);
+  const [formPlayers, setFormPlayers] = useState([]);
+  const [formManualPlayer, setFormManualPlayer] = useState('');
 
   const statusLabel = {
     Planned: t('events.status.Planned'),
@@ -49,19 +58,58 @@ export default function EventsPage() {
 
   useEffect(() => { load(); }, []);
 
+  // Search for attendees in the event detail panel
+  useEffect(() => {
+    if (attendeeSearch.length < 2) { setAttendeeSearchResults([]); return; }
+    const t = setTimeout(async () => {
+      const res = await db.searchPlayersGlobalAsync(attendeeSearch);
+      setAttendeeSearchResults(res);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [attendeeSearch]);
+
+  // Search for players during event creation form
+  useEffect(() => {
+    if (formPlayerSearch.length < 2) { setFormPlayerSearchResults([]); return; }
+    const t = setTimeout(async () => {
+      const res = await db.searchPlayersGlobalAsync(formPlayerSearch);
+      setFormPlayerSearchResults(res.filter(r => !formPlayers.find(p => p.name === (r.nickname || r.name))));
+    }, 250);
+    return () => clearTimeout(t);
+  }, [formPlayerSearch, formPlayers]);
+
   const upcoming = events.filter(e => new Date(e.eventDate) >= new Date());
   const past = events.filter(e => new Date(e.eventDate) < new Date());
+
+  const addFormPlayer = (p) => {
+    const name = p.nickname || p.name;
+    if (formPlayers.find(x => x.name === name)) return;
+    setFormPlayers(prev => [...prev, { name, linkedUserId: p.isUser ? p.creatorId : null, ownedGames: p.ownedGames || [] }]);
+    setFormPlayerSearch('');
+    setFormPlayerSearchResults([]);
+  };
+
+  const addFormManualPlayer = () => {
+    const n = formManualPlayer.trim();
+    if (!n || formPlayers.find(x => x.name === n)) return;
+    setFormPlayers(prev => [...prev, { name: n }]);
+    setFormManualPlayer('');
+  };
 
   const create = async () => {
     const evt = await db.createEventAsync(user.id, evtName, desc, location, date, startTime, endTime, plannedGames);
     addToast(t('events.toasts.created', { name: evt.name }), 'success');
     setEvtName(''); setDesc(''); setLocation(''); setPlannedGames('');
+    setDate(''); setStartTime(''); setEndTime('');
+    setFormPlayers([]); setFormPlayerSearch('');
     load();
   };
 
-  const addAttendee = async () => {
-    if (!selected || !attendeeName) return;
-    await db.addAttendeeAsync(selected.id, attendeeName);
+  const addAttendee = async (nameOverride, linkedUserId) => {
+    if (!selected) return;
+    const n = nameOverride || attendeeName;
+    if (!n) return;
+    await db.addAttendeeAsync(selected.id, n, linkedUserId || null);
     setAttendeeName('');
     addToast(t('events.toasts.attendeeAdded'), 'success');
     load();
@@ -97,8 +145,9 @@ export default function EventsPage() {
       style={{ cursor: 'pointer', marginBottom: 6 }}
     >
       <p style={{ color: 'var(--color8)', fontWeight: 600, fontSize: 14 }}>{evt.name}</p>
+
       <p style={{ color: 'var(--text1)', fontSize: 11 }}>
-        {new Date(evt.eventDate).toLocaleDateString(i18n.language === 'pl' ? 'pl-PL' : 'en-US')} • {evt.location}
+        {new Date(evt.eventDate).toLocaleDateString('pl-PL')} • {evt.location}
       </p>
       <p style={{ color: 'var(--text2)', fontSize: 11 }}>
         {t('events.details.attendeesCount')}: {evt.attendees?.length || 0} •{' '}
@@ -227,10 +276,17 @@ export default function EventsPage() {
                 {currentAttendees.map(a => (
                   <div key={a.id} className="card-inner attendee-row" style={{ marginBottom: 6 }}>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 13 }}>{a.name}</p>
+                      <p style={{ fontSize: 13, fontWeight:600, margin:'0 0 2px' }}>{a.name}</p>
                       <span className={`badge ${attendeeBadge[a.status] || ''}`}>
                         {attendeeLabel[a.status] || a.status}
                       </span>
+                      {a.ownedGames?.length > 0 && (
+                        <div style={{ marginTop:4, display:'flex', flexWrap:'wrap', gap:3 }}>
+                          {a.ownedGames.map(g => (
+                            <span key={g} style={{ fontSize:10, background:'var(--panel)', color:'var(--purple)', borderRadius:8, padding:'1px 6px' }}>🎲 {g}</span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <button
                       className="btn-primary"
