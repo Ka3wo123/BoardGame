@@ -95,13 +95,11 @@ Aplikacja będzie dostępna pod adresem `http://localhost:3000`. Serwer dewelope
 | `npm start` | Tryb deweloperski | Uruchamia serwer CRA na porcie `3000` z hot-reload. |
 | `npm run build` | Build produkcyjny | Tworzy zoptymalizowaną wersję w katalogu `build/`. |
 
-## Konta demo
+## Konto demo
 
 | Email | Hasło | Wyświetlana nazwa |
 | --- | --- | --- |
 | `demo@example.com` | `demo123` | Demo User |
-| `anna@example.com` | `anna123` | AnnaNova |
-| `piotr@example.com` | `piotr123` | PiotrGamer |
 
 Można też utworzyć własne konto przez formularz rejestracji (dane przechowywane w pamięci do czasu odświeżenia strony).
 
@@ -207,3 +205,38 @@ Polecenie tworzy zoptymalizowaną, statyczną wersję aplikacji w katalogu `buil
 - Brak backendu i trwałej bazy danych — dane są przechowywane w pamięci i resetowane przy odświeżeniu strony.
 - Hasła w danych demo są jawne (`passwordHash` to wartość przykładowa) — wyłącznie do celów demonstracyjnych.
 - Naturalny kierunek rozwoju: podpięcie realnego API w miejsce funkcji z `src/data/db.js` (zachowany już asynchroniczny interfejs).
+
+## Screeny aplikacji, Contentsquare i Google Analytics
+
+### Aplikacja BoardGames
+
+![Login Page](./images/login-page.png)
+<p align=center>Strona logowania</p>
+
+![Tournaments Page](./images/tournaments-page.png)
+<p align=center>Strona turniejów</p>
+
+![Events Page](./images/events-page.png)
+<p align=center>Strona wydarzeń</p>
+
+![Collection Page](./images/collection-page.png)
+<p align=center>Strona kolekcji gier</p>
+
+![Draw Page](./images/random-page.png)
+<p align=center>Strona losowania gier</p>
+
+![Community Page](./images/community-page.png)
+<p align=center>Strona społeczności</p>
+
+### Google Analytics i Contentsquare
+
+![GA Page](./images/analytics.png)
+<p align=center>Google Analytics - strona główna</p>
+
+![GA Page](./images/analytics2.png)
+<p align=center>Google Analytics - rejestr zdarzeń</p>
+
+![Contentsquare Page](./images/contensquare.png)
+<p align=center>ContentSquare - wyniki ankiety użytkowników</p>
+
+
